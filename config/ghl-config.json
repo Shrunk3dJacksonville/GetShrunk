@@ -1,0 +1,39 @@
+{
+  "api": {
+    "baseUrl": "https://services.leadconnectorhq.com",
+    "version": "2021-07-28",
+    "credentials": {
+      "apiKey": "YOUR_GHL_API_KEY_HERE",
+      "locationId": "YOUR_LOCATION_ID_HERE"
+    }
+  },
+  "webhooks": {
+    "endpoint": "http://localhost:3000/webhooks/ghl",
+    "events": [
+      "ContactCreate",
+      "ContactUpdate",
+      "ContactDelete",
+      "OpportunityCreate",
+      "OpportunityUpdate",
+      "OpportunityStatusUpdate"
+    ]
+  },
+  "sync": {
+    "autoSync": true,
+    "syncInterval": 300000,
+    "syncFields": [
+      "firstName",
+      "lastName",
+      "email",
+      "phone",
+      "tags",
+      "customFields"
+    ]
+  },
+  "folders": {
+    "clientMapping": {
+      "contactId": "clients/{firstName}_{lastName}_{contactId}",
+      "opportunityId": "projects/active/{opportunityName}_{opportunityId}"
+    }
+  }
+}
