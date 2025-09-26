@@ -12,16 +12,18 @@ class GoHighLevelClient {
       this.version = '2021-07-28';
     } else {
       this.config = this.loadConfig();
-      this.baseURL = this.config.api.baseUrl;
-      this.apiKey = this.config.api.credentials.apiKey;
-      this.locationId = this.config.api.credentials.locationId;
+      // Handle the actual config structure we save
+      this.baseURL = 'https://rest.gohighlevel.com/v1'; // Use correct API base
+      this.apiKey = this.config.apiKey;
+      this.locationId = this.config.locationId;
+      this.version = '2021-07-28';
     }
     
     this.client = axios.create({
       baseURL: this.baseURL,
       headers: {
         'Authorization': `Bearer ${this.apiKey}`,
-        'Version': this.version || this.config?.api?.version || '2021-07-28',
+        'Version': this.version,
         'Content-Type': 'application/json'
       }
     });

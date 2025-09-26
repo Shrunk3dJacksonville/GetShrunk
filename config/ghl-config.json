@@ -1,39 +1,15 @@
 {
-  "api": {
-    "baseUrl": "https://services.leadconnectorhq.com",
-    "version": "2021-07-28",
-    "credentials": {
-      "apiKey": "YOUR_GHL_API_KEY_HERE",
-      "locationId": "YOUR_LOCATION_ID_HERE"
-    }
+  "apiKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2NhdGlvbl9pZCI6InlLQ0Ewb3E1ZGhoQ0x4dWpHY0xyIiwidmVyc2lvbiI6MSwiaWF0IjoxNzMwMjA0MDA3ODg4LCJzdWIiOiJvQVk2WFhadjlvbHZYRHpZYmZ0RCJ9.OfSbiNTXAaG3YHRE7dRlgxknRaOrDuFok6S20X6n3HQ",
+  "locationId": "yKCA0oq5dhhCLxujGcLr",
+  "baseUrl": "https://rest.gohighlevel.com/v1",
+  "configuredAt": "2025-09-26T02:37:36.700Z",
+  "webhookEndpoints": {
+    "contacts": "/webhooks/ghl",
+    "opportunities": "/webhooks/ghl"
   },
-  "webhooks": {
-    "endpoint": "http://localhost:3000/webhooks/ghl",
-    "events": [
-      "ContactCreate",
-      "ContactUpdate",
-      "ContactDelete",
-      "OpportunityCreate",
-      "OpportunityUpdate",
-      "OpportunityStatusUpdate"
-    ]
-  },
-  "sync": {
+  "syncSettings": {
     "autoSync": true,
     "syncInterval": 300000,
-    "syncFields": [
-      "firstName",
-      "lastName",
-      "email",
-      "phone",
-      "tags",
-      "customFields"
-    ]
-  },
-  "folders": {
-    "clientMapping": {
-      "contactId": "clients/{firstName}_{lastName}_{contactId}",
-      "opportunityId": "projects/active/{opportunityName}_{opportunityId}"
-    }
+    "syncOnStartup": true
   }
 }

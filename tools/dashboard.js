@@ -394,7 +394,7 @@ class Dashboard {
       const config = {
         apiKey,
         locationId,
-        baseUrl: 'https://services.leadconnectorhq.com',
+        baseUrl: 'https://rest.gohighlevel.com/v1',
         configuredAt: new Date().toISOString(),
         webhookEndpoints: {
           contacts: '/webhooks/ghl',
