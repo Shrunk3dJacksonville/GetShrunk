@@ -8,6 +8,8 @@
     "organize": "node tools/file-organizer.js",
     "backup": "node tools/backup-manager.js",
     "ghl-sync": "node ghl-integration/sync-manager.js",
+    "ghl-setup": "node tools/ghl-setup.js",
+    "ghl-status": "node tools/ghl-setup.js status",
     "search": "node tools/search-tool.js",
     "client-setup": "node tools/client-manager.js setup",
     "project-create": "node tools/project-manager.js create",

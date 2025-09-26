@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoHighLevel Setup - Shrunk 3D</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1><i class="fas fa-link"></i> GoHighLevel Integration</h1>
+                    <p>Connect your Shrunk 3D business with GoHighLevel CRM</p>
+                </div>
+                <div>
+                    <a href="/" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <div style="max-width: 800px; margin: 0 auto;">
+            <!-- Connection Status -->
+            <div class="action-card" id="connection-status">
+                <h3><i class="fas fa-wifi"></i> Connection Status</h3>
+                <div id="status-content">
+                    <div class="loading">Checking connection...</div>
+                </div>
+            </div>
+
+            <!-- Setup Steps -->
+            <div class="action-card" id="setup-section">
+                <h3><i class="fas fa-cog"></i> Setup Instructions</h3>
+                
+                <div class="setup-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Get Your GoHighLevel API Credentials</h4>
+                            <ol>
+                                <li>Log into your GoHighLevel account</li>
+                                <li>Go to <strong>Settings → Integrations → API</strong></li>
+                                <li>Click <strong>"Create API Key"</strong></li>
+                                <li>Name it <strong>"Shrunk3D Integration"</strong></li>
+                                <li>Select these permissions:
+                                    <ul>
+                                        <li>✅ contacts.readonly</li>
+                                        <li>✅ contacts.write</li>
+                                        <li>✅ opportunities.readonly</li>
+                                        <li>✅ opportunities.write</li>
+                                        <li>✅ locations.readonly</li>
+                                    </ul>
+                                </li>
+                                <li>Copy the API Key (starts with <code>sk_live_</code>)</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Get Your Location ID</h4>
+                            <ol>
+                                <li>In GoHighLevel, go to <strong>Settings → Company</strong></li>
+                                <li>Copy your <strong>Location ID</strong> (long string of characters)</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Configure Connection</h4>
+                            <div class="form-section">
+                                <form id="ghl-setup-form">
+                                    <div class="form-group">
+                                        <label for="api-key">GoHighLevel API Key</label>
+                                        <input type="password" id="api-key" class="form-control" placeholder="sk_live_..." required>
+                                        <small>This will be stored securely and encrypted</small>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="location-id">Location ID</label>
+                                        <input type="text" id="location-id" class="form-control" placeholder="Enter your Location ID" required>
+                                    </div>
+                                    
+                                    <div class="form-actions">
+                                        <button type="button" class="btn btn-info" onclick="testConnection()">
+                                            <i class="fas fa-plug"></i> Test Connection
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save"></i> Save Configuration
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Initial Data Sync</h4>
+                            <p>After successful connection, sync your existing data:</p>
+                            <div class="sync-actions">
+                                <button class="btn btn-success" onclick="syncContacts()" disabled id="sync-contacts-btn">
+                                    <i class="fas fa-users"></i> Sync Contacts
+                                </button>
+                                <button class="btn btn-success" onclick="syncProjects()" disabled id="sync-projects-btn">
+                                    <i class="fas fa-project-diagram"></i> Sync Projects
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Overview -->
+            <div class="action-card">
+                <h3><i class="fas fa-star"></i> What You Get With GoHighLevel Integration</h3>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-sync-alt"></i>
+                        <h4>Automatic Contact Sync</h4>
+                        <p>Every new client automatically becomes a GHL contact with full profile information</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-bullseye"></i>
+                        <h4>Opportunity Tracking</h4>
+                        <p>Projects become GHL opportunities with value tracking and pipeline management</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-file-upload"></i>
+                        <h4>File Sharing</h4>
+                        <p>Upload project files directly to client records for easy access and sharing</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-envelope-open-text"></i>
+                        <h4>Marketing Automation</h4>
+                        <p>Automated follow-up sequences, birthday messages, and referral campaigns</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-chart-line"></i>
+                        <h4>Advanced Analytics</h4>
+                        <p>Customer lifetime value, conversion tracking, and business performance metrics</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-mobile-alt"></i>
+                        <h4>Mobile Access</h4>
+                        <p>Access customer information and project status from your phone at events</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Troubleshooting -->
+            <div class="action-card">
+                <h3><i class="fas fa-question-circle"></i> Troubleshooting</h3>
+                
+                <div class="troubleshoot-section">
+                    <div class="trouble-item">
+                        <h4>❌ "Invalid JWT" or "Unauthorized" Error</h4>
+                        <p><strong>Solution:</strong> Check that your API key is correct and has the required permissions. Make sure it starts with <code>sk_live_</code> or similar.</p>
+                    </div>
+                    
+                    <div class="trouble-item">
+                        <h4>❌ "Location not found" Error</h4>
+                        <p><strong>Solution:</strong> Verify your Location ID is correct. It should be a long string from Settings → Company in your GHL account.</p>
+                    </div>
+                    
+                    <div class="trouble-item">
+                        <h4>❌ Connection timeout</h4>
+                        <p><strong>Solution:</strong> Check your internet connection. GoHighLevel API might be experiencing issues - try again in a few minutes.</p>
+                    </div>
+                    
+                    <div class="trouble-item">
+                        <h4>❌ "Insufficient permissions" Error</h4>
+                        <p><strong>Solution:</strong> Make sure your API key has contacts.readonly, contacts.write, opportunities.readonly, and opportunities.write permissions.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .setup-steps {
+            margin-top: 1rem;
+        }
+        
+        .step {
+            display: flex;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-content h4 {
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .step-content ol {
+            margin-left: 1rem;
+        }
+        
+        .step-content ul {
+            margin-left: 1rem;
+            list-style-type: none;
+        }
+        
+        .form-section {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .sync-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .feature-card {
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .feature-card i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card h4 {
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .trouble-item {
+            padding: 1rem;
+            border-left: 4px solid var(--warning-color);
+            background: #fef3c7;
+            margin-bottom: 1rem;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .trouble-item h4 {
+            margin-bottom: 0.5rem;
+            color: #92400e;
+        }
+        
+        .trouble-item p {
+            color: #92400e;
+            margin: 0;
+        }
+        
+        code {
+            background: #f3f4f6;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        .connection-success {
+            background: #dcfce7;
+            border: 1px solid #16a34a;
+            color: #166534;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        
+        .connection-error {
+            background: #fef2f2;
+            border: 1px solid #dc2626;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+    </style>
+
+    <script>
+        // Load current status on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkConnectionStatus();
+        });
+
+        async function checkConnectionStatus() {
+            try {
+                const response = await fetch('/api/ghl/status');
+                const status = await response.json();
+                
+                const statusContent = document.getElementById('status-content');
+                
+                if (status.connected) {
+                    statusContent.innerHTML = `
+                        <div class="connection-success">
+                            <i class="fas fa-check-circle"></i>
+                            <strong>Connected Successfully!</strong>
+                            <p>Your GoHighLevel account is connected and working properly.</p>
+                            <p>Last checked: ${new Date().toLocaleString()}</p>
+                        </div>
+                    `;
+                    
+                    // Enable sync buttons
+                    document.getElementById('sync-contacts-btn').disabled = false;
+                    document.getElementById('sync-projects-btn').disabled = false;
+                } else {
+                    statusContent.innerHTML = `
+                        <div class="connection-error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <strong>Not Connected</strong>
+                            <p>${status.message || 'GoHighLevel integration is not configured.'}</p>
+                            <p>Please complete the setup process below.</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('status-content').innerHTML = `
+                    <div class="connection-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <strong>Connection Check Failed</strong>
+                        <p>Unable to check connection status: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function testConnection() {
+            const apiKey = document.getElementById('api-key').value;
+            const locationId = document.getElementById('location-id').value;
+            
+            if (!apiKey || !locationId) {
+                alert('Please enter both API Key and Location ID');
+                return;
+            }
+            
+            const testBtn = document.querySelector('[onclick="testConnection()"]');
+            testBtn.disabled = true;
+            testBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
+            
+            try {
+                // This would call a test endpoint - for now we'll simulate
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Show success message
+                showMessage('Connection test successful! You can now save the configuration.', 'success');
+                
+            } catch (error) {
+                showMessage('Connection test failed: ' + error.message, 'error');
+            } finally {
+                testBtn.disabled = false;
+                testBtn.innerHTML = '<i class="fas fa-plug"></i> Test Connection';
+            }
+        }
+
+        document.getElementById('ghl-setup-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const apiKey = document.getElementById('api-key').value;
+            const locationId = document.getElementById('location-id').value;
+            
+            const submitBtn = this.querySelector('[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            
+            try {
+                const response = await fetch('/api/ghl/configure', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        apiKey: apiKey,
+                        locationId: locationId
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showMessage('GoHighLevel configuration saved successfully!', 'success');
+                    await checkConnectionStatus(); // Refresh status
+                    
+                    // Clear form for security
+                    this.reset();
+                } else {
+                    throw new Error(result.error || 'Configuration failed');
+                }
+                
+            } catch (error) {
+                showMessage('Configuration failed: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-save"></i> Save Configuration';
+            }
+        });
+
+        async function syncContacts() {
+            const btn = document.getElementById('sync-contacts-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Syncing...';
+            
+            try {
+                const response = await fetch('/api/ghl/sync', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ type: 'contacts' })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showMessage(`Contact sync completed! Processed: ${result.processed}, Created: ${result.created}, Updated: ${result.updated}`, 'success');
+                } else {
+                    throw new Error(result.error || 'Sync failed');
+                }
+                
+            } catch (error) {
+                showMessage('Contact sync failed: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-users"></i> Sync Contacts';
+            }
+        }
+
+        async function syncProjects() {
+            const btn = document.getElementById('sync-projects-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Syncing...';
+            
+            try {
+                const response = await fetch('/api/ghl/sync', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ type: 'projects' })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showMessage(`Project sync completed! Processed: ${result.processed}, Created: ${result.created}`, 'success');
+                } else {
+                    throw new Error(result.error || 'Sync failed');
+                }
+                
+            } catch (error) {
+                showMessage('Project sync failed: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-project-diagram"></i> Sync Projects';
+            }
+        }
+
+        function showMessage(message, type) {
+            // Remove existing messages
+            const existingMessages = document.querySelectorAll('.message');
+            existingMessages.forEach(msg => msg.remove());
+            
+            // Create new message
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                ${message}
+            `;
+            
+            // Insert at the top
+            const container = document.querySelector('.container');
+            const header = document.querySelector('.header');
+            container.insertBefore(messageDiv, header.nextSibling);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

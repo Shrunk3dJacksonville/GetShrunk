@@ -76,6 +76,11 @@ class Dashboard {
     this.app.get('/pricing', (req, res) => {
       res.sendFile(path.join(__dirname, '../public/pricing-calculator.html'));
     });
+    
+    // GoHighLevel Setup Page
+    this.app.get('/ghl-setup', (req, res) => {
+      res.sendFile(path.join(__dirname, '../public/ghl-setup.html'));
+    });
 
     // API Routes
     this.app.get('/api/status', this.getSystemStatus.bind(this));
@@ -100,6 +105,7 @@ class Dashboard {
     
     // GoHighLevel integration
     this.app.get('/api/ghl/status', this.getGHLStatus.bind(this));
+    this.app.post('/api/ghl/configure', this.configureGHL.bind(this));
     this.app.post('/api/ghl/sync', this.syncWithGHL.bind(this));
     this.app.post('/webhooks/ghl', this.handleGHLWebhook.bind(this));
     
@@ -348,12 +354,118 @@ class Dashboard {
     }
   }
 
+  async configureGHL(req, res) {
+    try {
+      const { apiKey, locationId } = req.body;
+
+      if (!apiKey || !locationId) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'API Key and Location ID are required' 
+        });
+      }
+
+      // Test the connection first
+      const testClient = new GoHighLevelClient();
+      const testResult = await testClient.testConnection(apiKey, locationId);
+      
+      if (!testResult.connected) {
+        return res.status(400).json({
+          success: false,
+          error: testResult.error || 'Failed to connect to GoHighLevel'
+        });
+      }
+
+      // Save configuration
+      const configPath = path.join(this.baseDir, 'config', 'ghl-config.json');
+      await fs.ensureDir(path.dirname(configPath));
+      
+      const config = {
+        apiKey,
+        locationId,
+        baseUrl: 'https://services.leadconnectorhq.com',
+        configuredAt: new Date().toISOString(),
+        webhookEndpoints: {
+          contacts: '/webhooks/ghl',
+          opportunities: '/webhooks/ghl'
+        },
+        syncSettings: {
+          autoSync: true,
+          syncInterval: 300000, // 5 minutes
+          syncOnStartup: true
+        }
+      };
+
+      await fs.writeJson(configPath, config, { spaces: 2 });
+
+      // Initialize sync
+      try {
+        const syncResult = await this.clientManager.syncWithGHL();
+        
+        res.json({
+          success: true,
+          message: 'GoHighLevel configured successfully!',
+          config: {
+            locationId: config.locationId,
+            configuredAt: config.configuredAt,
+            webhookEndpoints: config.webhookEndpoints
+          },
+          syncResult
+        });
+      } catch (syncError) {
+        console.error('Initial sync failed:', syncError);
+        res.json({
+          success: true,
+          message: 'GoHighLevel configured successfully, but initial sync failed',
+          config: {
+            locationId: config.locationId,
+            configuredAt: config.configuredAt,
+            webhookEndpoints: config.webhookEndpoints
+          },
+          syncError: syncError.message
+        });
+      }
+
+    } catch (error) {
+      console.error('GHL Configuration Error:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: error.message 
+      });
+    }
+  }
+
   async syncWithGHL(req, res) {
     try {
-      const result = await this.clientManager.syncWithGHL();
-      res.json(result);
+      const { syncType = 'all' } = req.body;
+      
+      let result;
+      
+      switch (syncType) {
+        case 'contacts':
+          result = await this.clientManager.syncContacts();
+          break;
+        case 'projects':
+          result = await this.clientManager.syncProjects();
+          break;
+        case 'all':
+        default:
+          result = await this.clientManager.syncWithGHL();
+          break;
+      }
+      
+      res.json({
+        success: true,
+        syncType,
+        result,
+        timestamp: new Date().toISOString()
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ 
+        success: false, 
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
     }
   }
 
