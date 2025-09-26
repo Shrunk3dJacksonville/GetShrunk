@@ -88,6 +88,11 @@ class Dashboard {
     this.app.get('/ai-assistant', (req, res) => {
       res.sendFile(path.join(__dirname, '../public/ai-assistant.html'));
     });
+    
+    // Social Media & Email Tools Page
+    this.app.get('/social-templates', (req, res) => {
+      res.sendFile(path.join(__dirname, '../public/social-templates.html'));
+    });
 
     // API Routes
     this.app.get('/api/status', this.getSystemStatus.bind(this));
@@ -127,6 +132,10 @@ class Dashboard {
     // AI Assistant API
     this.app.post('/api/ai/chat', this.handleAIChat.bind(this));
     this.app.get('/api/ghl/contacts-summary', this.getContactsSummary.bind(this));
+    
+    // Social Media & Email Tools
+    this.app.get('/api/ghl/contacts-list', this.getContactsList.bind(this));
+    this.app.post('/api/ghl/send-email', this.sendEmailViaGHL.bind(this));
   }
 
   async getSystemStatus(req, res) {
@@ -684,6 +693,116 @@ class Dashboard {
           thisMonth: 0,
           eventContacts: 0
         }
+      });
+    }
+  }
+
+  async getContactsList(req, res) {
+    try {
+      // Load GHL configuration to check if connected
+      let ghlClient;
+      try {
+        const configPath = path.join(this.baseDir, 'config', 'ghl-config.json');
+        if (await fs.pathExists(configPath)) {
+          const config = await fs.readJson(configPath);
+          ghlClient = new GoHighLevelClient(config.apiKey, config.locationId);
+        } else {
+          throw new Error('GoHighLevel not configured');
+        }
+      } catch (configError) {
+        return res.json({
+          success: false,
+          error: 'GoHighLevel not connected',
+          contacts: []
+        });
+      }
+
+      // Fetch contacts from GHL
+      const { limit = 50 } = req.query;
+      const contacts = await ghlClient.getContacts({ limit: parseInt(limit) });
+      
+      if (!contacts || !contacts.contacts) {
+        throw new Error('Failed to fetch contacts');
+      }
+
+      res.json({
+        success: true,
+        contacts: contacts.contacts,
+        total: contacts.meta?.total || contacts.contacts.length
+      });
+
+    } catch (error) {
+      console.error('Get Contacts List Error:', error);
+      res.json({
+        success: false,
+        error: error.message,
+        contacts: []
+      });
+    }
+  }
+
+  async sendEmailViaGHL(req, res) {
+    try {
+      const { to, subject, body, contactId } = req.body;
+
+      if (!to || !subject || !body) {
+        return res.status(400).json({
+          success: false,
+          error: 'Missing required fields: to, subject, body'
+        });
+      }
+
+      // Load GHL configuration
+      let ghlClient;
+      try {
+        const configPath = path.join(this.baseDir, 'config', 'ghl-config.json');
+        if (await fs.pathExists(configPath)) {
+          const config = await fs.readJson(configPath);
+          ghlClient = new GoHighLevelClient(config.apiKey, config.locationId);
+        } else {
+          throw new Error('GoHighLevel not configured');
+        }
+      } catch (configError) {
+        return res.json({
+          success: false,
+          error: 'GoHighLevel not connected'
+        });
+      }
+
+      // Save email to local drafts folder for reference
+      const draftsDir = path.join(this.baseDir, 'config', 'email-drafts');
+      await fs.ensureDir(draftsDir);
+      
+      const draftId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+      const emailData = {
+        subject: subject,
+        body: body,
+        type: 'email_draft',
+        createdAt: new Date().toISOString(),
+        recipient: to,
+        draftId,
+        contactId
+      };
+      
+      await fs.writeJson(path.join(draftsDir, `${draftId}.json`), emailData, { spaces: 2 });
+
+      res.json({
+        success: true,
+        message: 'Email drafted successfully! Copy the content to send via your preferred email client.',
+        draftId: draftId,
+        emailContent: {
+          to: to,
+          subject: subject,
+          body: body
+        },
+        note: 'Email has been saved as a draft. You can copy this content to Gmail, Outlook, or your preferred email client.'
+      });
+
+    } catch (error) {
+      console.error('Send Email Error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
       });
     }
   }

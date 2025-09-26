@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media & Email Templates - Shrunk 3D</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --accent-color: #f59e0b;
+            --success-color: #10b981;
+            --text-color: #1f2937;
+            --text-light: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-color: #f9fafb;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-light);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab:hover {
+            color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .template-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .template-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+
+        .template-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .platform-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+        .facebook { background: #1877f2; }
+        .tiktok { background: #000000; }
+        .twitter { background: #1da1f2; }
+
+        .template-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .template-description {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .template-preview {
+            background: var(--bg-color);
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .template-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .email-composer {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .composer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .email-form {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .form-input {
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .email-body {
+            min-height: 300px;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .contact-picker {
+            background: var(--bg-color);
+            border-radius: 6px;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            margin-bottom: 1rem;
+        }
+
+        .contact-search {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .contact-item {
+            padding: 0.5rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+        }
+
+        .contact-item:hover {
+            background: var(--border-color);
+        }
+
+        .contact-item.selected {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .email-preview {
+            background: var(--bg-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .template-variables {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .variable-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .variable-tag {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .variable-tag:hover {
+            background: var(--primary-hover);
+        }
+
+        .success-message {
+            background: #dcfce7;
+            color: #166534;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            border: 1px solid #16a34a;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .template-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .tab {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-share-alt"></i> Social Media & Email Hub</h1>
+            <p>Create professional content for your Shrunk 3D business</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('social')">
+                <i class="fab fa-instagram"></i> Social Media Templates
+            </button>
+            <button class="tab" onclick="showTab('email')">
+                <i class="fas fa-envelope"></i> Email Composer
+            </button>
+        </div>
+
+        <!-- Social Media Templates Tab -->
+        <div id="social" class="tab-content active">
+            <div class="template-grid" id="social-templates">
+                <!-- Templates will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Email Composer Tab -->
+        <div id="email" class="tab-content">
+            <div class="email-composer">
+                <div class="composer-header">
+                    <h2><i class="fas fa-envelope"></i> Professional Email Composer</h2>
+                    <button class="btn btn-secondary" onclick="loadContactsFromGHL()">
+                        <i class="fas fa-sync"></i> Load GHL Contacts
+                    </button>
+                </div>
+
+                <div class="contact-picker" id="contact-picker" style="display: none;">
+                    <label class="form-label">Select Contact from GoHighLevel:</label>
+                    <input type="text" class="contact-search" id="contact-search" placeholder="Search contacts...">
+                    <div class="contact-list" id="contact-list"></div>
+                </div>
+
+                <form class="email-form" id="email-form">
+                    <div class="form-group">
+                        <label class="form-label">To:</label>
+                        <input type="email" class="form-input" id="email-to" placeholder="recipient@example.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Subject:</label>
+                        <input type="text" class="form-input" id="email-subject" placeholder="Email subject line" required>
+                    </div>
+
+                    <div class="template-variables">
+                        <label class="form-label">Quick Insert Variables:</label>
+                        <div class="variable-tags">
+                            <span class="variable-tag" onclick="insertVariable('{FIRST_NAME}')">{FIRST_NAME}</span>
+                            <span class="variable-tag" onclick="insertVariable('{LAST_NAME}')">{LAST_NAME}</span>
+                            <span class="variable-tag" onclick="insertVariable('{COMPANY}')">{COMPANY}</span>
+                            <span class="variable-tag" onclick="insertVariable('{EVENT_NAME}')">{EVENT_NAME}</span>
+                            <span class="variable-tag" onclick="insertVariable('{PRICE_QUOTE}')">{PRICE_QUOTE}</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email Body:</label>
+                        <textarea class="form-input email-body" id="email-body" placeholder="Write your professional email here..." required></textarea>
+                    </div>
+
+                    <div class="template-actions">
+                        <button type="button" class="btn btn-secondary" onclick="previewEmail()">
+                            <i class="fas fa-eye"></i> Preview
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="saveEmailTemplate()">
+                            <i class="fas fa-save"></i> Save as Template
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="sendToGHL()">
+                            <i class="fas fa-paper-plane"></i> Send via GoHighLevel
+                        </button>
+                    </div>
+                </form>
+
+                <div class="email-preview" id="email-preview" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let ghlContacts = [];
+        let selectedContact = null;
+
+        // Social Media Templates Data
+        const socialTemplates = [
+            {
+                platform: 'instagram',
+                icon: 'fab fa-instagram',
+                title: 'Event Showcase Post',
+                description: 'Show off your work from recent events',
+                content: `✨ Another amazing day creating memories at {EVENT_NAME}! 
+
+Check out these incredible 3D figurines we made today 📸➡️🎨
+
+Every detail captured perfectly - from the smile to the outfit! 
+
+#Shrunk3D #Jacksonville #3DFigurines #MemoriesMade #EventLife #TechnologyMeetsArt
+
+Book your next event: DM us! 📩`
+            },
+            {
+                platform: 'facebook',
+                icon: 'fab fa-facebook',
+                title: 'Wedding Feature Post',
+                description: 'Highlight wedding figurines with emotional appeal',
+                content: `💕 Love Story Captured Forever 💕
+
+{COUPLE_NAMES} chose Shrunk 3D to preserve their special day, and we couldn't be more honored! 
+
+These custom wedding figurines will be treasured for generations to come. From the bride's intricate dress details to the groom's proud smile - every moment captured in stunning 3D detail.
+
+Planning your wedding? Let us create something magical for you too! 
+
+📞 Contact us today for wedding packages
+🎯 Serving Jacksonville and surrounding areas
+💒 Perfect for engagement parties, weddings, and anniversaries
+
+#JacksonvilleWeddings #WeddingKeepsakes #Shrunk3D #3DFigurines #WeddingMemories`
+            },
+            {
+                platform: 'tiktok',
+                icon: 'fab fa-tiktok',
+                title: 'Behind the Scenes',
+                description: 'Show the scanning and printing process',
+                content: `POV: You're getting turned into a 3D figurine ✨
+
+Watch the magic happen! 
+
+Step 1: 360° scanning 📸
+Step 2: Digital magic ✨  
+Step 3: 3D printing 🖨️
+Step 4: Pure amazement 😍
+
+Who wants to be next? 👀
+
+#Shrunk3D #3DPrinting #Jacksonville #TechMagic #MiniMe #3DFigurine #ScanToPrint #FYP`
+            },
+            {
+                platform: 'instagram',
+                icon: 'fab fa-instagram',
+                title: 'Pet Figurines Story',
+                description: 'Emotional pet figurine content',
+                content: `🐾 Forever Friends 🐾
+
+This sweet pup may have crossed the rainbow bridge, but their memory lives on in this beautiful 3D figurine 💙
+
+We're honored to help families preserve these precious memories. Every whisker, every smile, captured forever.
+
+Pet figurines starting at $89
+Perfect for:
+• Memorial keepsakes
+• Moving away gifts  
+• Just because you love them!
+
+Jacksonville's premier pet figurine service 🏆
+
+#PetMemorials #DogFigurines #CatFigurines #Jacksonville #Shrunk3D #PetLove #MemoryKeepsake`
+            },
+            {
+                platform: 'facebook',
+                icon: 'fab fa-facebook',
+                title: 'Corporate Event Post',
+                description: 'Professional B2B content for corporate services',
+                content: `🏢 CORPORATE EVENT SUCCESS! 🏢
+
+Thank you to {COMPANY_NAME} for choosing Shrunk 3D for your company retreat! 
+
+Our corporate figurine services added a unique touch that had everyone talking. Nothing builds team morale quite like seeing yourself as a 3D figurine! 
+
+✅ Team building activity
+✅ Memorable corporate gifts
+✅ Brand activation opportunity
+✅ Employee engagement boost
+
+Planning a corporate event in Jacksonville? Let's discuss how 3D figurines can make your event unforgettable.
+
+📧 Corporate packages available
+📞 Call for group pricing
+🎯 Serving Northeast Florida
+
+#CorporateEvents #TeamBuilding #Jacksonville #BusinessEvents #Shrunk3D #CorporateGifts #EmployeeEngagement`
+            },
+            {
+                platform: 'instagram',
+                icon: 'fab fa-instagram',
+                title: 'Product Showcase',
+                description: 'Show different figurine options and pricing',
+                content: `Which size speaks to you? 👀
+
+📏 4" Classic: Perfect desk companion - $89
+📏 6" Premium: Impressive detail - $129  
+📏 8" Deluxe: Museum quality - $189
+
+All sizes include:
+✨ 360° professional scanning
+✨ High-resolution 3D printing
+✨ Hand-finished details
+✨ Satisfaction guarantee
+
+Swipe to see the difference! ➡️
+
+Book your session: Link in bio 🔗
+
+#Shrunk3D #3DFigurines #Jacksonville #PricingOptions #QualityWork #DetailedWork #ProfessionalService`
+            }
+        ];
+
+        // Email Templates
+        const emailTemplates = {
+            wedding_inquiry: {
+                subject: "Your Dream Wedding Figurines - Shrunk 3D Jacksonville",
+                body: `Dear {FIRST_NAME},
+
+Thank you for your interest in our wedding figurine services! I'm thrilled to help make your special day even more memorable.
+
+Our wedding packages include:
+• Bride & Groom figurine set
+• Professional scanning at your venue
+• Hand-finished details capturing every element
+• Elegant presentation box
+
+Starting at $199 for the couple set, with group discounts available for wedding parties.
+
+I'd love to schedule a quick call to discuss your vision and answer any questions you might have.
+
+Best wishes for your upcoming wedding!
+
+Warm regards,
+Shrunk 3D Jacksonville Team
+📞 [Your Phone Number]
+📧 [Your Email]`
+            },
+            corporate_inquiry: {
+                subject: "Unique Corporate Event Experience - 3D Figurine Services",
+                body: `Hello {FIRST_NAME},
+
+Thank you for considering Shrunk 3D for your upcoming corporate event at {COMPANY}!
+
+Our corporate services include:
+• On-site scanning and printing setup
+• Professional event staff
+• Branded packaging options
+• Group pricing for large teams
+• Complete equipment and logistics handling
+
+We've successfully served companies throughout Jacksonville, creating memorable experiences that boost employee engagement and provide unique branded takeaways.
+
+I'd be happy to provide a custom quote based on your event size and requirements.
+
+Looking forward to making your event unforgettable!
+
+Best regards,
+[Your Name]
+Shrunk 3D Jacksonville`
+            }
+        };
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSocialTemplates();
+            setupEmailComposer();
+        });
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function loadSocialTemplates() {
+            const container = document.getElementById('social-templates');
+            
+            socialTemplates.forEach((template, index) => {
+                const templateCard = createTemplateCard(template, index);
+                container.appendChild(templateCard);
+            });
+        }
+
+        function createTemplateCard(template, index) {
+            const card = document.createElement('div');
+            card.className = 'template-card';
+            
+            card.innerHTML = `
+                <div class="template-header">
+                    <div class="platform-icon ${template.platform}">
+                        <i class="${template.icon}"></i>
+                    </div>
+                    <div class="template-title">${template.title}</div>
+                </div>
+                <div class="template-description">${template.description}</div>
+                <div class="template-preview" id="preview-${index}">${template.content}</div>
+                <div class="template-actions">
+                    <button class="btn btn-primary" onclick="copyTemplate(${index})">
+                        <i class="fas fa-copy"></i> Copy Text
+                    </button>
+                    <button class="btn btn-secondary" onclick="customizeTemplate(${index})">
+                        <i class="fas fa-edit"></i> Customize
+                    </button>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function copyTemplate(index) {
+            const template = socialTemplates[index];
+            navigator.clipboard.writeText(template.content).then(() => {
+                showSuccessMessage('Template copied to clipboard! You can now paste it into your social media post.');
+            });
+        }
+
+        function customizeTemplate(index) {
+            const template = socialTemplates[index];
+            const customizedContent = prompt('Customize your template:', template.content);
+            
+            if (customizedContent) {
+                document.getElementById(`preview-${index}`).textContent = customizedContent;
+                navigator.clipboard.writeText(customizedContent);
+                showSuccessMessage('Customized template copied to clipboard!');
+            }
+        }
+
+        function setupEmailComposer() {
+            // Load email templates into dropdown or quick access
+            const templateButtons = Object.keys(emailTemplates).map(key => {
+                const template = emailTemplates[key];
+                return `<button class="btn btn-secondary" onclick="loadEmailTemplate('${key}')" style="margin-right: 0.5rem; margin-bottom: 0.5rem;">
+                    <i class="fas fa-file-alt"></i> ${key.replace('_', ' ').toUpperCase()}
+                </button>`;
+            }).join('');
+            
+            const templateSection = document.createElement('div');
+            templateSection.className = 'template-variables';
+            templateSection.innerHTML = `
+                <label class="form-label">Quick Email Templates:</label>
+                <div style="margin-top: 0.5rem;">${templateButtons}</div>
+            `;
+            
+            document.getElementById('email-form').insertBefore(templateSection, document.querySelector('.template-variables'));
+        }
+
+        function loadEmailTemplate(templateKey) {
+            const template = emailTemplates[templateKey];
+            document.getElementById('email-subject').value = template.subject;
+            document.getElementById('email-body').value = template.body;
+        }
+
+        async function loadContactsFromGHL() {
+            try {
+                const response = await fetch('/api/ghl/contacts-list');
+                const result = await response.json();
+                
+                if (result.success && result.contacts) {
+                    ghlContacts = result.contacts;
+                    displayContacts(ghlContacts);
+                    document.getElementById('contact-picker').style.display = 'block';
+                    showSuccessMessage(`Loaded ${ghlContacts.length} contacts from GoHighLevel`);
+                } else {
+                    throw new Error(result.error || 'Failed to load contacts');
+                }
+            } catch (error) {
+                alert('Error loading contacts from GoHighLevel: ' + error.message);
+            }
+        }
+
+        function displayContacts(contacts) {
+            const contactList = document.getElementById('contact-list');
+            contactList.innerHTML = '';
+            
+            contacts.slice(0, 20).forEach(contact => {
+                const contactItem = document.createElement('div');
+                contactItem.className = 'contact-item';
+                contactItem.innerHTML = `
+                    <strong>${contact.contactName || contact.firstName + ' ' + contact.lastName}</strong><br>
+                    <small>${contact.email || 'No email'} • ${contact.phone || 'No phone'}</small>
+                `;
+                contactItem.onclick = () => selectContact(contact, contactItem);
+                contactList.appendChild(contactItem);
+            });
+        }
+
+        function selectContact(contact, element) {
+            // Clear previous selection
+            document.querySelectorAll('.contact-item').forEach(item => item.classList.remove('selected'));
+            element.classList.add('selected');
+            
+            selectedContact = contact;
+            
+            // Fill in email fields
+            document.getElementById('email-to').value = contact.email || '';
+            
+            // Update any template variables
+            updateTemplateVariables(contact);
+        }
+
+        function updateTemplateVariables(contact) {
+            const firstName = contact.firstName || contact.contactName?.split(' ')[0] || '';
+            const lastName = contact.lastName || contact.contactName?.split(' ').slice(1).join(' ') || '';
+            
+            // Update email body with contact info if it has placeholders
+            let emailBody = document.getElementById('email-body').value;
+            emailBody = emailBody.replace(/{FIRST_NAME}/g, firstName);
+            emailBody = emailBody.replace(/{LAST_NAME}/g, lastName);
+            emailBody = emailBody.replace(/{COMPANY}/g, contact.companyName || '');
+            
+            document.getElementById('email-body').value = emailBody;
+        }
+
+        function insertVariable(variable) {
+            const emailBody = document.getElementById('email-body');
+            const cursorPos = emailBody.selectionStart;
+            const textBefore = emailBody.value.substring(0, cursorPos);
+            const textAfter = emailBody.value.substring(cursorPos);
+            
+            emailBody.value = textBefore + variable + textAfter;
+            emailBody.focus();
+            emailBody.setSelectionRange(cursorPos + variable.length, cursorPos + variable.length);
+        }
+
+        function previewEmail() {
+            const emailPreview = document.getElementById('email-preview');
+            const subject = document.getElementById('email-subject').value;
+            const body = document.getElementById('email-body').value;
+            const to = document.getElementById('email-to').value;
+            
+            emailPreview.innerHTML = `
+                <h3>Email Preview</h3>
+                <p><strong>To:</strong> ${to}</p>
+                <p><strong>Subject:</strong> ${subject}</p>
+                <div style="border-top: 1px solid var(--border-color); padding-top: 1rem; margin-top: 1rem;">
+                    ${body.replace(/\n/g, '<br>')}
+                </div>
+            `;
+            emailPreview.style.display = 'block';
+        }
+
+        function saveEmailTemplate() {
+            const subject = document.getElementById('email-subject').value;
+            const body = document.getElementById('email-body').value;
+            
+            if (!subject || !body) {
+                alert('Please fill in both subject and body to save as template');
+                return;
+            }
+            
+            // Save to localStorage for now
+            const templates = JSON.parse(localStorage.getItem('emailTemplates') || '{}');
+            const templateName = prompt('Enter a name for this template:');
+            
+            if (templateName) {
+                templates[templateName] = { subject, body };
+                localStorage.setItem('emailTemplates', JSON.stringify(templates));
+                showSuccessMessage('Email template saved successfully!');
+            }
+        }
+
+        async function sendToGHL() {
+            const emailData = {
+                to: document.getElementById('email-to').value,
+                subject: document.getElementById('email-subject').value,
+                body: document.getElementById('email-body').value,
+                contactId: selectedContact?.id
+            };
+            
+            if (!emailData.to || !emailData.subject || !emailData.body) {
+                alert('Please fill in all email fields');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/ghl/send-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(emailData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccessMessage('Email sent successfully via GoHighLevel!');
+                    // Clear form
+                    document.getElementById('email-form').reset();
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                alert('Error sending email: ' + error.message);
+            }
+        }
+
+        // Search contacts
+        document.getElementById('contact-search')?.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredContacts = ghlContacts.filter(contact => 
+                (contact.contactName || '').toLowerCase().includes(searchTerm) ||
+                (contact.email || '').toLowerCase().includes(searchTerm) ||
+                (contact.firstName || '').toLowerCase().includes(searchTerm) ||
+                (contact.lastName || '').toLowerCase().includes(searchTerm)
+            );
+            displayContacts(filteredContacts);
+        });
+
+        function showSuccessMessage(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            
+            document.querySelector('.container').insertBefore(successDiv, document.querySelector('.tabs'));
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

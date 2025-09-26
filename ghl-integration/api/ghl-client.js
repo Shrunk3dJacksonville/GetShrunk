@@ -261,6 +261,19 @@ class GoHighLevelClient {
     return new Error(`${message}: ${error.message}`);
   }
 
+  // Add note to contact
+  async addContactNote(contactId, note) {
+    try {
+      const response = await this.client.post(`/contacts/${contactId}/notes`, {
+        body: note,
+        userId: 'system'
+      });
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error, 'Failed to add note to contact');
+    }
+  }
+
   // Health check
   async testConnection() {
     try {
