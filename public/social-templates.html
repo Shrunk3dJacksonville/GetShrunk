@@ -508,6 +508,28 @@
                         <textarea class="form-input" id="context-input" rows="3" placeholder="Add any specific details, tone, or requirements for your content..."></textarea>
                     </div>
 
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Content Tone:</label>
+                            <select class="form-input" id="tone-select">
+                                <option value="professional">🏢 Professional</option>
+                                <option value="casual">😊 Casual & Friendly</option>
+                                <option value="exciting">🚀 Energetic & Exciting</option>
+                                <option value="elegant">✨ Elegant & Sophisticated</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Content Focus:</label>
+                            <select class="form-input" id="focus-select">
+                                <option value="technology">🔬 Technology & Innovation</option>
+                                <option value="emotion">💝 Emotional & Memory-focused</option>
+                                <option value="convenience">⚡ Convenience & Service</option>
+                                <option value="luxury">👑 Premium & Luxury</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="generator-actions">
                         <button type="button" class="btn btn-primary" onclick="generateCustomTemplate()">
                             <i class="fas fa-sparkles"></i> Generate Template
@@ -1357,11 +1379,16 @@ Shrunk 3D`
             const platform = document.getElementById('platform-select').value;
             const topic = document.getElementById('topic-input').value;
             const context = document.getElementById('context-input').value;
+            const tone = document.getElementById('tone-select').value;
+            const focus = document.getElementById('focus-select').value;
             
             if (!topic.trim()) {
                 alert('Please enter a topic or event type');
                 return;
             }
+            
+            // Enhanced context with tone and focus
+            const enhancedContext = `${context}\n\nTone: ${tone}\nFocus: ${focus}`.trim();
             
             const generateBtn = document.querySelector('.btn[onclick="generateCustomTemplate()"]');
             const originalText = generateBtn.innerHTML;
@@ -1372,7 +1399,7 @@ Shrunk 3D`
                 const response = await fetch('/api/generate-template', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ platform, topic, context })
+                    body: JSON.stringify({ platform, topic, context: enhancedContext, tone, focus })
                 });
                 
                 const result = await response.json();
@@ -1432,6 +1459,8 @@ Shrunk 3D`
             document.getElementById('platform-select').value = 'instagram';
             document.getElementById('topic-input').value = '';
             document.getElementById('context-input').value = '';
+            document.getElementById('tone-select').value = 'professional';
+            document.getElementById('focus-select').value = 'technology';
             document.getElementById('generated-content').style.display = 'none';
         }
     </script>

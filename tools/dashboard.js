@@ -11,6 +11,7 @@ const ProjectManager = require('./project-manager');
 const PricingEngine = require('./pricing-engine');
 const GoHighLevelClient = require('../ghl-integration/api/ghl-client');
 const AIAssistant = require('./ai-assistant');
+const AIContentGenerator = require('./ai-content-generator');
 
 class Dashboard {
   constructor() {
@@ -23,6 +24,7 @@ class Dashboard {
     this.projectManager = new ProjectManager();
     this.pricingEngine = new PricingEngine();
     this.aiAssistant = new AIAssistant();
+    this.aiContentGenerator = new AIContentGenerator();
     
     this.setupMiddleware();
     this.setupFileUpload();
@@ -923,8 +925,8 @@ class Dashboard {
 
       const guidelines = platformGuidelines[platform];
       
-      // Generate template using built-in logic
-      const template = await this.generateAIContent(platform, topic, context, guidelines);
+      // Generate template using intelligent AI content generator
+      const template = await this.aiContentGenerator.generateIntelligentContent(platform, topic, context, this.determineTone(context, platform));
 
       res.json({
         success: true,
@@ -937,6 +939,20 @@ class Dashboard {
         success: false,
         error: error.message
       });
+    }
+  }
+
+  determineTone(context, platform) {
+    const contextLower = (context || '').toLowerCase();
+    
+    if (contextLower.includes('professional') || contextLower.includes('corporate') || contextLower.includes('business') || platform === 'linkedin') {
+      return 'professional';
+    } else if (contextLower.includes('fun') || contextLower.includes('party') || contextLower.includes('celebration') || platform === 'tiktok') {
+      return 'exciting';
+    } else if (contextLower.includes('elegant') || contextLower.includes('formal') || contextLower.includes('wedding')) {
+      return 'elegant';
+    } else {
+      return 'casual';
     }
   }
 
@@ -1129,47 +1145,14 @@ ${guidelines.hashtags}`
     else if (topicLower.includes('wedding') || topicLower.includes('bride') || topicLower.includes('groom')) category = 'wedding';
     else if (topicLower.includes('corporate') || topicLower.includes('business') || topicLower.includes('company')) category = 'corporate';
     
-    // Return template if available, otherwise generate custom
+    // This is now a fallback - the AI Content Generator should handle most cases
+    // Return template if available, otherwise use AI generator
     if (templates[category] && templates[category][platform]) {
       return templates[category][platform];
     }
     
-    // Generate custom template for topics not in predefined templates
-    return this.generateCustomContent(platform, topic, context, guidelines);
-  }
-
-  generateCustomContent(platform, topic, context, guidelines) {
-    const platformEmojis = {
-      instagram: '📸',
-      tiktok: '🎵',
-      facebook: '👥',
-      linkedin: '💼',
-      twitter: '🐦',
-      youtube: '📺',
-      snapchat: '👻'
-    };
-
-    const emoji = platformEmojis[platform] || '✨';
-    const contextText = context ? `\n\nContext: ${context}` : '';
-
-    // Create a basic template structure
-    const template = `${emoji} ${topic} just got the 3D treatment! ✨
-
-Our mobile 3D photobooth brings cutting-edge photogrammetric technology right to your ${topic.toLowerCase()}. With 180 high-resolution cameras, we capture every detail to create stunning 3D figurines.
-
-📸 Professional 180-camera scanning
-🎪 Mobile booth setup
-🎨 Ultra-premium nylon 3D printing
-💰 $30 design fee per person
-📦 3-5 week professional delivery${contextText}
-
-Your memories deserve the 3D dimension!
-
-📞 Book today: Shrunk3d.com
-
-${guidelines.hashtags}`;
-
-    return template;
+    // If no predefined template, the AI generator should have been used
+    return this.aiContentGenerator.generateIntelligentContent(platform, topic, context, 'professional');
   }
 }
 
