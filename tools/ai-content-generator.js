@@ -180,22 +180,34 @@ class AIContentGenerator {
   }
 
   categorizeTopic(topic) {
+    // Check for specific combinations first, then individual keywords
+    if (topic.includes('birthday') || topic.includes('bday')) return 'celebration';
+    if (topic.includes('wedding') || topic.includes('bride') || topic.includes('groom')) return 'wedding';
+    if (topic.includes('graduation') || topic.includes('retirement')) return 'milestone';
+    if (topic.includes('corporate') || topic.includes('business')) return 'professional';
+    if (topic.includes('baby shower') || topic.includes('family')) return 'family';
+    if (topic.includes('sports') || topic.includes('game') || topic.includes('tournament')) return 'sports';
+    if (topic.includes('festival') || topic.includes('art show') || topic.includes('cultural')) return 'cultural';
+    
+    // Fallback to keyword matching for edge cases
     const categories = {
-      celebration: ['birthday', 'anniversary', 'graduation', 'wedding', 'party', 'celebration'],
-      professional: ['corporate', 'business', 'conference', 'meeting', 'team building', 'networking'],
-      milestone: ['graduation', 'retirement', 'promotion', 'achievement', 'milestone'],
-      family: ['baby shower', 'family reunion', 'holiday', 'thanksgiving', 'christmas'],
-      sports: ['game', 'tournament', 'sports', 'competition', 'championship'],
-      cultural: ['festival', 'art', 'music', 'cultural', 'community', 'charity']
+      wedding: ['marriage', 'ceremony', 'reception'],
+      milestone: ['promotion', 'achievement', 'milestone', 'accomplishment'],
+      professional: ['conference', 'meeting', 'team building', 'networking', 'company'],
+      family: ['holiday', 'thanksgiving', 'christmas', 'newborn'],
+      sports: ['competition', 'championship', 'athletic', 'team'],
+      cultural: ['music', 'community', 'charity', 'exhibit', 'museum'],
+      celebration: ['anniversary', 'party', 'celebration'] // Very general terms last
     };
     
     for (const [category, keywords] of Object.entries(categories)) {
       if (keywords.some(keyword => topic.includes(keyword))) {
+        console.log(`Topic "${topic}" categorized as: ${category}`);
         return category;
       }
     }
     
-    return 'general';
+    return 'celebration'; // Default to celebration instead of general
   }
 
   identifyEmotions(topic, context) {
@@ -390,26 +402,64 @@ class AIContentGenerator {
     const { hook, emotions } = creativity;
     const emotionWord = this.randomSelect(emotions);
     
+    // Create highly specific openings for each category with multiple variations
     const openings = {
+      wedding: [
+        `💍 Your "I Do" moment deserves ${emotionWord} perfection!`,
+        `From this day forward, ${emotionWord} memories! 👰🤵`,
+        `${hook} weddings could be this ${emotionWord}? 💒`,
+        `Love story meets ${emotionWord} technology! 💕`,
+        `Two hearts, one ${emotionWord} celebration! 💖`,
+        `Wedding day magic becomes ${emotionWord} memories! ✨`
+      ],
+      
       celebration: [
-        `${hook} your celebration became ${emotionWord}? ✨`,
-        `🎉 This ${emotionWord} moment deserves something special!`,
-        `When memories get the ${emotionWord} treatment they deserve! 🌟`
+        `🎉 Birthday magic is about to get ${emotionWord}!`,
+        `Another year older, infinitely more ${emotionWord}! 🎂`,
+        `This birthday celebration deserves ${emotionWord} memories! 🎁`,
+        `${hook} birthdays could be this ${emotionWord}? ✨`,
+        `Party time just got a ${emotionWord} upgrade! 🎉`,
+        `Blow out the candles and capture ${emotionWord} moments! 🕯️`
       ],
       professional: [
-        `${hook} professional events get a ${emotionWord} upgrade 💼`,
-        `🚀 Transforming corporate experiences with ${emotionWord} innovation`,
-        `Business events just got ${emotionWord}! 📈`
+        `💼 Corporate events that are actually ${emotionWord}!`,
+        `Business meetings just became ${emotionWord}! 🚀`,
+        `${hook} professional networking could be this ${emotionWord}?`,
+        `Transform your corporate culture with ${emotionWord} innovation! 📈`,
+        `Executive decisions: Make your next event ${emotionWord}! 🎯`,
+        `Professional excellence meets ${emotionWord} technology! 🏆`
       ],
       milestone: [
-        `${hook} milestone moments become ${emotionWord}? 🎯`,
-        `This ${emotionWord} achievement calls for something extraordinary! 🏆`,
-        `Celebrating life's ${emotionWord} moments in a whole new dimension! ⭐`
+        `🎓 Graduation day gets the ${emotionWord} treatment!`,
+        `Achievement unlocked: ${emotionWord} memories! 🏆`,
+        `${hook} milestones could be this ${emotionWord}?`,
+        `Success never looked so ${emotionWord}! ⭐`,
+        `This accomplishment deserves ${emotionWord} recognition! 🎤`,
+        `Years of hard work, one ${emotionWord} moment! 💪`
       ],
       family: [
-        `${hook} family moments get the ${emotionWord} treatment! 👨‍👩‍👧‍👦`,
-        `Creating ${emotionWord} family memories that last forever! 💕`,
-        `When family gatherings become ${emotionWord}! 🏠`
+        `💕 Family time just got infinitely more ${emotionWord}!`,
+        `${hook} family gatherings could be this ${emotionWord}?`,
+        `Three generations, one ${emotionWord} experience! 👨‍👩‍👧‍👦`,
+        `Family bonds that are truly ${emotionWord}! 🏠`,
+        `Love, laughter, and ${emotionWord} memories! 🐶`,
+        `The family that captures together, stays ${emotionWord} together! 📸`
+      ],
+      sports: [
+        `🏆 Victory never looked so ${emotionWord}!`,
+        `${hook} champions could be this ${emotionWord}?`,
+        `Game day just became ${emotionWord}! ⚽`,
+        `Athletic excellence meets ${emotionWord} technology! 🏅`,
+        `From the field to forever - ${emotionWord} memories! 🏈`,
+        `Champions deserve ${emotionWord} recognition! 🥇`
+      ],
+      cultural: [
+        `🌍 Cultural celebration meets ${emotionWord} innovation!`,
+        `${hook} traditions could be this ${emotionWord}?`,
+        `Heritage preservation gets ${emotionWord}! 🎭`,
+        `Community spirit captured in ${emotionWord} detail! 🎪`,
+        `Art, culture, and ${emotionWord} technology unite! 🎨`,
+        `Festival magic becomes ${emotionWord} memories! 🎆`
       ]
     };
     
@@ -418,27 +468,116 @@ class AIContentGenerator {
   }
 
   generateMainContent(topicAnalysis, technology, businessModel, platformSpecs, audience) {
-    const { category, occasion, uniqueElements } = topicAnalysis;
+    const { category, occasion, uniqueElements, emotions } = topicAnalysis;
     
-    // Tailor content based on audience and platform style
-    let content = '';
+    // Create category-specific content that varies significantly
+    let content = this.generateCategorySpecificContent(category, occasion, emotions, technology, businessModel, platformSpecs, uniqueElements);
     
-    if (platformSpecs.style === 'professional-insight') {
-      content = `Our ${businessModel.deployment} leverages ${technology.scanningProcess} to capture comprehensive event moments. `;
-      content += `The ${technology.printing} process ensures premium-quality results with our ${technology.turnaround}.`;
-    } else if (platformSpecs.style === 'hook-driven') {
-      content = `📸 ${technology.scanningProcess}\n🎪 ${businessModel.deployment}\n🎨 ${technology.printing}\n📦 ${technology.turnaround}`;
-    } else {
-      content = `Our ${businessModel.type} brings ${businessModel.setup} directly to your ${occasion}! `;
-      content += `With ${technology.scanningProcess}, we capture every detail for ${technology.printing}. `;
+    return content;
+  }
+  
+  generateCategorySpecificContent(category, occasion, emotions, technology, businessModel, platformSpecs, uniqueElements) {
+    const style = platformSpecs.style;
+    
+    // Create dramatically different content based on event category
+    const categoryContent = {
+      wedding: {
+        'professional-insight': `Preserve matrimonial moments with precision photogrammetric documentation. Our wedding specialists utilize ${technology.scanningProcess} to create heirloom-quality ${technology.printing} that capture the essence of your union ceremony.`,
+        'hook-driven': `💍 "I Do" to 3D forever!\n💒 ${technology.scanningProcess}\n👰 Every detail preserved\n💕 ${technology.printing}\n⏰ ${technology.turnaround}`,
+        default: `Your wedding day is the most important day of your life - it deserves 3D perfection! From the first look to the last dance, our wedding photography specialists capture every precious moment in stunning three-dimensional detail. Create heirloom memories that your family will treasure for generations!`
+      },
       
-      // Add unique elements if present
-      if (uniqueElements.length > 0) {
-        content += `Perfect for ${uniqueElements.join(' and ')} events! `;
+      celebration: {
+        'professional-insight': `Our specialized event capture technology transforms birthday celebrations and personal milestones into lasting 3D memories. The ${technology.scanningProcess} ensures every joyful moment is preserved with ${technology.printing} precision.`,
+        'hook-driven': `🎉 Birthday magic in 3D!\n📸 ${technology.scanningProcess}\n🎂 Capture the celebration\n🎁 ${technology.printing}\n⏰ ${technology.turnaround}`,
+        default: `Transform your ${occasion} into something extraordinary! Our mobile celebration specialists bring the party-perfecting technology that turns happy moments into treasured 3D keepsakes. Every smile, every candle, every precious birthday second captured in stunning detail!`
+      },
+      
+      professional: {
+        'professional-insight': `Elevate corporate events with cutting-edge photogrammetric solutions. Our ${businessModel.deployment} provides scalable ${technology.scanningProcess} for professional environments, delivering ${technology.printing} results within our ${technology.turnaround} framework.`,
+        'hook-driven': `💼 Corporate innovation unlocked\n📈 ${technology.scanningProcess}\n🚀 Professional excellence\n💰 ${technology.pricing}\n📊 ${technology.turnaround}`,
+        default: `Revolutionize your ${occasion} with professional-grade 3D capture technology! Our corporate specialists understand that business events need sophisticated solutions. Transform team meetings, conferences, and corporate celebrations into engaging experiences that boost morale and create lasting connections.`
+      },
+      
+      milestone: {
+        'professional-insight': `Commemorate life's defining moments with precision 3D documentation. Our ${technology.scanningProcess} creates permanent records of achievements, utilizing ${technology.printing} to preserve graduation ceremonies, promotions, and career milestones.`,
+        'hook-driven': `🏆 Achievement unlocked in 3D!\n🎓 ${technology.scanningProcess}\n⭐ Milestone magic\n🎯 ${technology.printing}\n📅 ${technology.turnaround}`,
+        default: `Your ${occasion} deserves more than just photos - it deserves 3D permanence! This incredible achievement represents years of hard work, and our technology ensures these proud moments live forever in three dimensions. From graduation caps to retirement celebrations, we capture success in its full glory!`
+      },
+      
+      family: {
+        'professional-insight': `Strengthen family bonds through innovative 3D memory preservation. Our ${businessModel.deployment} specializes in multi-generational capture using ${technology.scanningProcess} to create heirloom-quality ${technology.printing} figurines.`,
+        'hook-driven': `👨‍👩‍👧‍👦 Family moments in 3D\n💕 ${technology.scanningProcess}\n🏠 Love captured forever\n👶 ${technology.printing}\n⏰ ${technology.turnaround}`,
+        default: `Bring your family together in the most meaningful way possible! Our ${occasion} specialists understand that family moments are precious and fleeting. Whether it's baby showers, family reunions, or holiday gatherings, we create 3D memories that connect generations and preserve family love in tangible form.`
+      },
+      
+      sports: {
+        'professional-insight': `Capture athletic achievement and team dynamics through advanced 3D documentation. Our sports-specialized ${technology.scanningProcess} preserves victory moments and team unity with ${technology.printing} precision.`,
+        'hook-driven': `🏆 Victory in 3D form!\n⚽ ${technology.scanningProcess}\n🎖️ Champions preserved\n🥇 ${technology.printing}\n📅 ${technology.turnaround}`,
+        default: `Champions deserve champion treatment! Your ${occasion} represents dedication, teamwork, and pure athletic excellence. Our sports photography specialists capture the energy, the victory, the team spirit in stunning 3D detail. From game-winning moments to championship celebrations!`
+      },
+      
+      cultural: {
+        'professional-insight': `Document cultural celebrations and community events with comprehensive 3D archival technology. Our ${technology.scanningProcess} preserves cultural heritage through ${technology.printing} while respecting traditional values.`,
+        'hook-driven': `🌍 Culture captured in 3D\n🎭 ${technology.scanningProcess}\n🎨 Heritage preserved\n🎪 ${technology.printing}\n📅 ${technology.turnaround}`,
+        default: `Celebrate culture, tradition, and community spirit! Your ${occasion} connects past, present, and future - and our technology honors that connection. From festivals to art shows, cultural events deserve documentation that matches their significance and beauty.`
       }
+    };
+    
+    const selectedCategory = categoryContent[category] || categoryContent.celebration;
+    let content = selectedCategory[style] || selectedCategory.default;
+    
+    // Add unique elements contextually
+    if (uniqueElements.length > 0) {
+      const elementText = this.generateElementEnhancement(uniqueElements, category);
+      content += ` ${elementText}`;
     }
     
     return content;
+  }
+  
+  generateElementEnhancement(uniqueElements, category) {
+    const elementMap = {
+      'outdoor-setting': {
+        celebration: 'Perfect for outdoor birthday celebrations under the open sky!',
+        professional: 'Ideal for outdoor corporate retreats and team-building events.',
+        milestone: 'Beautiful outdoor graduation and achievement ceremonies.',
+        family: 'Wonderful for backyard family gatherings and garden parties.',
+        sports: 'Excellent for outdoor sports events and competitions.',
+        cultural: 'Great for outdoor festivals and community celebrations.'
+      },
+      'indoor-setting': {
+        celebration: 'Elegant indoor party atmosphere with controlled lighting.',
+        professional: 'Professional indoor conference and meeting environments.',
+        milestone: 'Sophisticated indoor ceremony settings.',
+        family: 'Cozy indoor family gathering spaces.',
+        sports: 'Indoor sports facilities and gymnasium events.',
+        cultural: 'Beautiful indoor cultural venues and art galleries.'
+      },
+      'formal-attire': {
+        celebration: 'Capture the elegance of formal birthday celebrations.',
+        professional: 'Professional business attire and corporate sophistication.',
+        milestone: 'Formal graduation and achievement ceremony attire.',
+        family: 'Elegant family formal occasions and special dinners.',
+        sports: 'Awards ceremonies and formal sports recognition events.',
+        cultural: 'Formal cultural events and gala celebrations.'
+      },
+      'large-group': {
+        celebration: 'Epic group birthday celebrations with all your friends!',
+        professional: 'Large-scale corporate events and company-wide gatherings.',
+        milestone: 'Major graduation ceremonies with hundreds of participants.',
+        family: 'Big family reunions bringing everyone together.',
+        sports: 'Entire team celebrations and tournament gatherings.',
+        cultural: 'Community-wide festivals and cultural celebrations.'
+      }
+    };
+    
+    const enhancements = uniqueElements.map(element => {
+      const elementEnhancements = elementMap[element];
+      return elementEnhancements ? elementEnhancements[category] || elementEnhancements.celebration : '';
+    }).filter(text => text.length > 0);
+    
+    return enhancements.length > 0 ? enhancements.join(' ') : '';
   }
 
   generateFeaturesList(technology, businessModel, style) {
@@ -462,17 +601,37 @@ class AIContentGenerator {
   generateClosingCTA(platform, ctaType, occasion) {
     const businessCTA = "📞 Book your experience: Shrunk3d.com";
     
-    const platformCTAs = {
-      instagram: `Ready to make your ${occasion} unforgettable? ${businessCTA}`,
-      tiktok: `Your ${occasion} deserves this upgrade! ${businessCTA}`,
-      facebook: `Transform your ${occasion} with 3D memories! ${businessCTA}`,
-      linkedin: `Elevate your professional events with innovative technology. ${businessCTA}`,
-      twitter: `${occasion} + 3D tech = Unforgettable! ${businessCTA}`,
-      youtube: `Don't miss the opportunity to revolutionize your ${occasion}. ${businessCTA}`,
-      snapchat: `Make your ${occasion} legendary! ${businessCTA}`
+    // Create occasion-specific CTAs that match the content tone
+    const occasionCTAs = {
+      'personal-celebration': [
+        `Ready to make your birthday legendary? ${businessCTA}`,
+        `Turn your party into a 3D masterpiece! ${businessCTA}`,
+        `Don't just celebrate - immortalize the moment! ${businessCTA}`
+      ],
+      'major-life-event': [
+        `Your wedding deserves 3D perfection! ${businessCTA}`,
+        `Create wedding memories that last lifetimes! ${businessCTA}`,
+        `Say 'I Do' to 3D wedding magic! ${businessCTA}`
+      ],
+      'business-event': [
+        `Elevate your corporate culture with innovation! ${businessCTA}`,
+        `Transform your business events forever! ${businessCTA}`,
+        `Professional excellence demands 3D memories! ${businessCTA}`
+      ],
+      'achievement-milestone': [
+        `Your success deserves 3D recognition! ${businessCTA}`,
+        `Graduation memories that last forever! ${businessCTA}`,
+        `Achievement unlocked: 3D commemoration! ${businessCTA}`
+      ],
+      'special-occasion': [
+        `Ready to make memories that last forever? ${businessCTA}`,
+        `Transform your event into something extraordinary! ${businessCTA}`,
+        `Don't just remember - relive in 3D! ${businessCTA}`
+      ]
     };
     
-    return platformCTAs[platform] || platformCTAs.instagram;
+    const selectedCTAs = occasionCTAs[occasion] || occasionCTAs['special-occasion'];
+    return this.randomSelect(selectedCTAs);
   }
 
   generateIntelligentHashtags(platform, category, topic) {
