@@ -21,8 +21,8 @@ class Dashboard {
     this.projectManager = new ProjectManager();
     
     this.setupMiddleware();
-    this.setupRoutes();
     this.setupFileUpload();
+    this.setupRoutes();
   }
 
   setupMiddleware() {
