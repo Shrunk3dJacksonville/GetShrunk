@@ -328,6 +328,91 @@
             border: 1px solid #16a34a;
         }
 
+        /* Custom Generator Styles */
+        .custom-generator {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .generator-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .generator-form {
+            margin-bottom: 2rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .generator-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .generated-content {
+            background: var(--bg-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .template-result {
+            margin-top: 1rem;
+        }
+
+        .platform-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        .content-preview {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            margin-bottom: 1rem;
+        }
+
+        .template-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 1rem;
@@ -346,6 +431,20 @@
                 width: 100%;
                 text-align: center;
             }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .generator-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .template-actions {
+                flex-direction: column;
+                align-items: center;
+            }
         }
     </style>
 </head>
@@ -360,6 +459,9 @@
             <button class="tab active" onclick="showTab('social')">
                 <i class="fab fa-instagram"></i> Social Media Templates
             </button>
+            <button class="tab" onclick="showTab('custom')">
+                <i class="fas fa-magic"></i> Custom Generator
+            </button>
             <button class="tab" onclick="showTab('email')">
                 <i class="fas fa-envelope"></i> Email Composer
             </button>
@@ -369,6 +471,68 @@
         <div id="social" class="tab-content active">
             <div class="template-grid" id="social-templates">
                 <!-- Templates will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Custom Template Generator Tab -->
+        <div id="custom" class="tab-content">
+            <div class="custom-generator">
+                <div class="generator-header">
+                    <h2><i class="fas fa-magic"></i> AI-Powered Template Generator</h2>
+                    <p>Choose your platform and topic, let AI create the perfect caption!</p>
+                </div>
+
+                <div class="generator-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Social Media Platform:</label>
+                            <select class="form-input" id="platform-select">
+                                <option value="instagram">📸 Instagram</option>
+                                <option value="tiktok">🎵 TikTok</option>
+                                <option value="facebook">👥 Facebook</option>
+                                <option value="linkedin">💼 LinkedIn</option>
+                                <option value="twitter">🐦 Twitter/X</option>
+                                <option value="youtube">📺 YouTube</option>
+                                <option value="snapchat">👻 Snapchat</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Content Topic/Event:</label>
+                            <input type="text" class="form-input" id="topic-input" placeholder="e.g., Birthday party, Corporate event, Wedding, Holiday celebration..." required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Additional Context (Optional):</label>
+                        <textarea class="form-input" id="context-input" rows="3" placeholder="Add any specific details, tone, or requirements for your content..."></textarea>
+                    </div>
+
+                    <div class="generator-actions">
+                        <button type="button" class="btn btn-primary" onclick="generateCustomTemplate()">
+                            <i class="fas fa-sparkles"></i> Generate Template
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="clearGeneratorForm()">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
+                    </div>
+                </div>
+
+                <div class="generated-content" id="generated-content" style="display: none;">
+                    <h3>Generated Template</h3>
+                    <div class="template-result">
+                        <div class="platform-info" id="platform-info"></div>
+                        <div class="content-preview" id="content-preview"></div>
+                        <div class="template-actions">
+                            <button class="btn btn-success" onclick="copyGeneratedContent()">
+                                <i class="fas fa-copy"></i> Copy Content
+                            </button>
+                            <button class="btn btn-primary" onclick="generateCustomTemplate()">
+                                <i class="fas fa-redo"></i> Generate Another
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1186,6 +1350,89 @@ Shrunk 3D`
             setTimeout(() => {
                 successDiv.remove();
             }, 3000);
+        }
+
+        // Custom Template Generator Functions
+        async function generateCustomTemplate() {
+            const platform = document.getElementById('platform-select').value;
+            const topic = document.getElementById('topic-input').value;
+            const context = document.getElementById('context-input').value;
+            
+            if (!topic.trim()) {
+                alert('Please enter a topic or event type');
+                return;
+            }
+            
+            const generateBtn = document.querySelector('.btn[onclick="generateCustomTemplate()"]');
+            const originalText = generateBtn.innerHTML;
+            generateBtn.innerHTML = '<span class="loading-spinner"></span> Generating...';
+            generateBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/generate-template', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ platform, topic, context })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayGeneratedTemplate(result.template, platform);
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                alert('Error generating template: ' + error.message);
+            } finally {
+                generateBtn.innerHTML = originalText;
+                generateBtn.disabled = false;
+            }
+        }
+        
+        function displayGeneratedTemplate(template, platform) {
+            const platformEmojis = {
+                instagram: '📸',
+                tiktok: '🎵',
+                facebook: '👥',
+                linkedin: '💼',
+                twitter: '🐦',
+                youtube: '📺',
+                snapchat: '👻'
+            };
+            
+            document.getElementById('platform-info').innerHTML = `
+                ${platformEmojis[platform]} ${platform.charAt(0).toUpperCase() + platform.slice(1)} Template
+            `;
+            
+            document.getElementById('content-preview').textContent = template;
+            document.getElementById('generated-content').style.display = 'block';
+            
+            // Scroll to generated content
+            document.getElementById('generated-content').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function copyGeneratedContent() {
+            const content = document.getElementById('content-preview').textContent;
+            navigator.clipboard.writeText(content).then(() => {
+                showSuccessMessage('Template copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = content;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showSuccessMessage('Template copied to clipboard!');
+            });
+        }
+        
+        function clearGeneratorForm() {
+            document.getElementById('platform-select').value = 'instagram';
+            document.getElementById('topic-input').value = '';
+            document.getElementById('context-input').value = '';
+            document.getElementById('generated-content').style.display = 'none';
         }
     </script>
 </body>

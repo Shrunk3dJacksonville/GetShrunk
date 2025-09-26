@@ -136,6 +136,7 @@ class Dashboard {
     // Social Media & Email Tools
     this.app.get('/api/ghl/contacts-list', this.getContactsList.bind(this));
     this.app.post('/api/ghl/send-email', this.sendEmailViaGHL.bind(this));
+    this.app.post('/api/generate-template', this.generateCustomTemplate.bind(this));
   }
 
   async getSystemStatus(req, res) {
@@ -865,6 +866,307 @@ class Dashboard {
       console.log(`📊 Dashboard URL: http://localhost:${this.port}`);
       console.log(`🔧 API Base URL: http://localhost:${this.port}/api`);
     });
+  }
+
+  async generateCustomTemplate(req, res) {
+    try {
+      const { platform, topic, context } = req.body;
+
+      if (!platform || !topic) {
+        return res.status(400).json({
+          success: false,
+          error: 'Missing required fields: platform and topic'
+        });
+      }
+
+      // Define platform-specific guidelines
+      const platformGuidelines = {
+        instagram: {
+          maxLength: 2200,
+          style: 'Visual storytelling with emojis, hashtags, and engaging captions. Use line breaks for readability.',
+          hashtags: '#Shrunk3D #3DPhotography #Photogrammetry #3DPrinting #EventTech #MemoryCapture #Innovation'
+        },
+        tiktok: {
+          maxLength: 300,
+          style: 'Short, punchy, trending language. Use hooks, trends, and relatable content.',
+          hashtags: '#Shrunk3D #3DPhotography #TechTok #EventTech #MobileBusiness #Innovation #3DPrinting'
+        },
+        facebook: {
+          maxLength: 500,
+          style: 'Conversational and community-focused. Encourage engagement and sharing.',
+          hashtags: '#Shrunk3D #3DPhotography #EventServices #ProfessionalPhotography #MemoryMaking'
+        },
+        linkedin: {
+          maxLength: 1300,
+          style: 'Professional, business-focused content highlighting innovation and professional services.',
+          hashtags: '#Shrunk3D #EventTechnology #BusinessInnovation #ProfessionalServices #3DPhotography'
+        },
+        twitter: {
+          maxLength: 280,
+          style: 'Concise, engaging, and shareable. Use trending topics and relevant hashtags.',
+          hashtags: '#Shrunk3D #3DPhotography #EventTech #Innovation #TechNews'
+        },
+        youtube: {
+          maxLength: 5000,
+          style: 'Detailed descriptions with strong hooks, clear value propositions, and call-to-actions.',
+          hashtags: '#Shrunk3D #3DPhotography #EventTechnology #BehindTheScenes #TechReview'
+        },
+        snapchat: {
+          maxLength: 250,
+          style: 'Casual, fun, and authentic. Focus on the experience and moment.',
+          hashtags: '#Shrunk3D #3DPhotography #SnapMemories #CoolTech'
+        }
+      };
+
+      const guidelines = platformGuidelines[platform];
+      
+      // Generate template using built-in logic
+      const template = await this.generateAIContent(platform, topic, context, guidelines);
+
+      res.json({
+        success: true,
+        template: template
+      });
+
+    } catch (error) {
+      console.error('Template Generation Error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+
+  async generateAIContent(platform, topic, context, guidelines) {
+    // Template library for common topics
+    const templates = {
+      birthday: {
+        instagram: `🎉 Birthday memories just got an upgrade! 🎂✨
+
+Capturing this special day with our cutting-edge 180-image photogrammetric technology! 
+
+📸 Professional mobile photobooth setup
+🎪 Ultra-premium nylon 3D printing
+⏰ 3-5 week delivery of your custom figurine
+💰 Starting at $30 design fee per person
+
+Your birthday deserves more than just photos - create lasting 3D memories! 🎁
+
+📞 Book your event: Shrunk3d.com
+
+${guidelines.hashtags} #BirthdayMemories #3DFigurine #SpecialDay`,
+        
+        tiktok: `POV: Your birthday photos just entered the 3rd dimension ✨
+
+📸 180 cameras capture every angle
+🎪 Mobile booth setup
+🎨 Ultra-premium 3D printing
+📦 Your mini-me in 3-5 weeks
+
+Birthdays will never be the same! 🎂
+
+${guidelines.hashtags} #BirthdayTech #BirthdayParty`,
+        
+        facebook: `🎉 Make this birthday unforgettable! 
+
+Our mobile 3D photobooth brings cutting-edge photogrammetric technology right to your celebration. With 180 high-resolution cameras, we capture every detail to create stunning 3D figurines.
+
+✅ Professional setup at your venue
+✅ $30 design fee per person
+✅ Ultra-premium nylon printing
+✅ 3-5 week delivery
+
+Book your birthday experience today!
+
+${guidelines.hashtags}`,
+        
+        linkedin: `Elevating birthday celebrations with innovative 3D photogrammetry technology.
+
+Our mobile photobooth service leverages 180-camera arrays to capture comprehensive biometric data, producing ultra-premium nylon figurines through advanced 3D printing processes.
+
+Key service features:
+• Professional-grade photogrammetric scanning
+• Mobile deployment capability
+• 3-5 week production timeline
+• Competitive $30 design fee structure
+
+Transforming special occasions through technological innovation.
+
+${guidelines.hashtags}`
+      },
+      
+      wedding: {
+        instagram: `💍 "I Do" to 3D memories! 👰🤵✨
+
+This beautiful couple chose to capture their wedding day in a whole new dimension! Our mobile 3D photobooth created stunning figurines using 180-image photogrammetric scanning.
+
+💒 Professional venue setup
+📸 Cutting-edge capture technology  
+🎨 Ultra-premium nylon 3D printing
+💝 $30 design fee per person
+⏰ 3-5 week delivery timeline
+
+Your wedding deserves memories that last forever in 3D! 💕
+
+📞 Book: Shrunk3d.com
+
+${guidelines.hashtags} #WeddingMemories #3DWedding #BrideAndGroom`,
+        
+        tiktok: `When your wedding photos become 3D figurines 💒✨
+
+This couple's reaction when they saw their mini wedding selves! 😍
+
+📸 180 cameras = perfect capture
+👰 Every dress detail preserved
+🤵 Every smile immortalized
+📦 Delivered in 3-5 weeks
+
+Wedding game: ELEVATED 💍
+
+${guidelines.hashtags} #WeddingTech #WeddingGoals`,
+        
+        facebook: `💕 Wedding memories reimagined! 
+
+Celebrate your special day with our revolutionary 3D photobooth service. Our professional mobile setup captures every precious detail of your wedding using advanced photogrammetric technology.
+
+What's included:
+• Professional 180-camera scanning
+• Mobile setup at your venue
+• Ultra-premium nylon figurines
+• $30 design fee per person
+• 3-5 week professional production
+
+Create wedding keepsakes that will be treasured for generations!
+
+${guidelines.hashtags}`,
+        
+        linkedin: `Revolutionizing wedding photography through advanced 3D photogrammetry.
+
+Our enterprise-grade mobile photobooth solution captures wedding ceremonies with unprecedented detail using 180-camera photogrammetric arrays. The resulting ultra-premium nylon figurines provide couples with tangible, three-dimensional memories of their special day.
+
+Service specifications:
+• Professional mobile deployment
+• Photogrammetric capture technology
+• 3-5 week production cycle
+• Competitive pricing at $30 per scan
+
+Elevating milestone celebrations through innovative technology solutions.
+
+${guidelines.hashtags}`
+      },
+      
+      corporate: {
+        instagram: `🏢 Corporate events just got a 3D upgrade! 💼✨
+
+Team building takes on new meaning when everyone goes home with their own 3D figurine! Our mobile photobooth brought cutting-edge technology to this corporate event.
+
+🎯 Professional mobile setup
+📸 180-image capture technology
+👥 Team engagement boost
+💰 $30 design fee per person
+📦 3-5 week delivery
+
+Ready to elevate your next corporate event? 
+
+📞 Contact us: Shrunk3d.com
+
+${guidelines.hashtags} #CorporateEvents #TeamBuilding #EmployeeEngagement`,
+        
+        tiktok: `Corporate events when Shrunk 3D pulls up 📈✨
+
+Employees: "Just another meeting" 😒
+Also employees when they see the 3D booth: 🤩
+
+📸 180 cameras ready
+💼 Professional setup
+🎨 Everyone gets their mini-me
+📊 Engagement: 📈📈📈
+
+Corporate events will never be boring again!
+
+${guidelines.hashtags} #CorporateLife #TeamBuilding`,
+        
+        facebook: `🚀 Transform your corporate events! 
+
+Our professional 3D photobooth service adds an innovative element to company gatherings, conferences, and team-building events. Employees love the unique experience and take home personalized 3D figurines as memorable keepsakes.
+
+Professional services include:
+• Mobile booth setup at your venue
+• Advanced photogrammetric scanning
+• Group pricing for large teams
+• Professional event coordination
+• 3-5 week delivery timeline
+
+Boost employee engagement with cutting-edge technology!
+
+${guidelines.hashtags}`,
+        
+        linkedin: `Enhancing corporate engagement through innovative 3D capture technology.
+
+Our professional photogrammetric services transform standard corporate events into memorable experiences. The mobile deployment of 180-camera arrays enables comprehensive 3D scanning at any corporate venue.
+
+Business advantages:
+• Enhanced employee engagement metrics
+• Unique branded corporate gifts
+• Professional event technology integration
+• Scalable pricing for enterprise clients
+• Memorable brand experience creation
+
+Differentiate your corporate events with cutting-edge 3D technology.
+
+${guidelines.hashtags}`
+      }
+    };
+
+    // Determine topic category
+    const topicLower = topic.toLowerCase();
+    let category = 'custom';
+    
+    if (topicLower.includes('birthday')) category = 'birthday';
+    else if (topicLower.includes('wedding') || topicLower.includes('bride') || topicLower.includes('groom')) category = 'wedding';
+    else if (topicLower.includes('corporate') || topicLower.includes('business') || topicLower.includes('company')) category = 'corporate';
+    
+    // Return template if available, otherwise generate custom
+    if (templates[category] && templates[category][platform]) {
+      return templates[category][platform];
+    }
+    
+    // Generate custom template for topics not in predefined templates
+    return this.generateCustomContent(platform, topic, context, guidelines);
+  }
+
+  generateCustomContent(platform, topic, context, guidelines) {
+    const platformEmojis = {
+      instagram: '📸',
+      tiktok: '🎵',
+      facebook: '👥',
+      linkedin: '💼',
+      twitter: '🐦',
+      youtube: '📺',
+      snapchat: '👻'
+    };
+
+    const emoji = platformEmojis[platform] || '✨';
+    const contextText = context ? `\n\nContext: ${context}` : '';
+
+    // Create a basic template structure
+    const template = `${emoji} ${topic} just got the 3D treatment! ✨
+
+Our mobile 3D photobooth brings cutting-edge photogrammetric technology right to your ${topic.toLowerCase()}. With 180 high-resolution cameras, we capture every detail to create stunning 3D figurines.
+
+📸 Professional 180-camera scanning
+🎪 Mobile booth setup
+🎨 Ultra-premium nylon 3D printing
+💰 $30 design fee per person
+📦 3-5 week professional delivery${contextText}
+
+Your memories deserve the 3D dimension!
+
+📞 Book today: Shrunk3d.com
+
+${guidelines.hashtags}`;
+
+    return template;
   }
 }
 
