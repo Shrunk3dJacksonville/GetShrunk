@@ -8,6 +8,7 @@ const cors = require('cors');
 const FileOrganizer = require('./file-organizer');
 const ClientManager = require('./client-manager');
 const ProjectManager = require('./project-manager');
+const PricingEngine = require('./pricing-engine');
 const GoHighLevelClient = require('../ghl-integration/api/ghl-client');
 
 class Dashboard {
@@ -19,6 +20,7 @@ class Dashboard {
     this.fileOrganizer = new FileOrganizer();
     this.clientManager = new ClientManager();
     this.projectManager = new ProjectManager();
+    this.pricingEngine = new PricingEngine();
     
     this.setupMiddleware();
     this.setupFileUpload();
@@ -69,6 +71,11 @@ class Dashboard {
     this.app.get('/', (req, res) => {
       res.sendFile(path.join(__dirname, '../public/index.html'));
     });
+    
+    // Pricing Calculator
+    this.app.get('/pricing', (req, res) => {
+      res.sendFile(path.join(__dirname, '../public/pricing-calculator.html'));
+    });
 
     // API Routes
     this.app.get('/api/status', this.getSystemStatus.bind(this));
@@ -98,6 +105,11 @@ class Dashboard {
     
     // Search functionality
     this.app.get('/api/search', this.searchFiles.bind(this));
+    
+    // Pricing Engine API
+    this.app.post('/api/pricing/calculate', this.calculatePricing.bind(this));
+    this.app.post('/api/pricing/quote', this.generateQuote.bind(this));
+    this.app.get('/api/pricing/config', this.getPricingConfig.bind(this));
   }
 
   async getSystemStatus(req, res) {
@@ -381,6 +393,53 @@ class Dashboard {
       
       const results = await this.performSearch(query, type);
       res.json(results);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async calculatePricing(req, res) {
+    try {
+      const { orderDetails, eventType = 'standard' } = req.body;
+      
+      if (!orderDetails) {
+        return res.status(400).json({ error: 'Order details required' });
+      }
+      
+      const calculation = this.pricingEngine.calculateOrderTotal(orderDetails, eventType);
+      res.json(calculation);
+      
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async generateQuote(req, res) {
+    try {
+      const { orderDetails, eventType = 'standard', customerInfo = {} } = req.body;
+      
+      if (!orderDetails) {
+        return res.status(400).json({ error: 'Order details required' });
+      }
+      
+      const quote = this.pricingEngine.generatePriceQuote(orderDetails, eventType, customerInfo);
+      
+      // Optionally save quote to database or file system
+      const quotesDir = path.join(this.baseDir, 'config', 'quotes');
+      await fs.ensureDir(quotesDir);
+      await fs.writeJson(path.join(quotesDir, `${quote.quoteId}.json`), quote, { spaces: 2 });
+      
+      res.json(quote);
+      
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async getPricingConfig(req, res) {
+    try {
+      const config = this.pricingEngine.pricingConfig;
+      res.json(config);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

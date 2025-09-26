@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shrunk 3D - Pricing Calculator</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .pricing-calculator {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .calculator-main {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+        
+        .quote-summary {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 20px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+        
+        .item-builder {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .item-type-tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .item-type-tab {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+        }
+        
+        .item-type-tab.active {
+            border-bottom-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 100px;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: end;
+        }
+        
+        .size-selector {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .size-option {
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .size-option:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .size-option.selected {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .event-type-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .event-type-card {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .event-type-card:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .event-type-card.selected {
+            border-color: var(--primary-color);
+            background: #eff6ff;
+        }
+        
+        .quote-item {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .quote-item:last-child {
+            border-bottom: none;
+        }
+        
+        .quote-total {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            padding: 1rem;
+            background: var(--light-bg);
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .profit-analysis {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .profit-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .profit-row:last-child {
+            margin-bottom: 0;
+            font-weight: bold;
+            border-top: 1px solid #0ea5e9;
+            padding-top: 0.5rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quote-summary {
+                position: static;
+                max-height: none;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .size-selector {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .event-type-selector {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="pricing-calculator">
+        <header class="header">
+            <div style="display: flex; justify-content: between; align-items: center;">
+                <div>
+                    <h1><i class="fas fa-calculator"></i> Shrunk 3D Pricing Calculator</h1>
+                    <p>Generate accurate quotes for your 3D figurine orders</p>
+                </div>
+                <div>
+                    <a href="/" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <div class="calculator-grid">
+            <!-- Main Calculator -->
+            <div class="calculator-main">
+                <!-- Event Type Selection -->
+                <div class="section">
+                    <h3><i class="fas fa-calendar-alt"></i> Event Type</h3>
+                    <div class="event-type-selector">
+                        <div class="event-type-card selected" data-type="standard">
+                            <i class="fas fa-calendar"></i>
+                            <h4>Standard</h4>
+                            <p>Regular events</p>
+                            <small>Base pricing</small>
+                        </div>
+                        <div class="event-type-card" data-type="premium">
+                            <i class="fas fa-star"></i>
+                            <h4>Premium</h4>
+                            <p>NFL, Major festivals</p>
+                            <small>+30% pricing</small>
+                        </div>
+                        <div class="event-type-card" data-type="budget">
+                            <i class="fas fa-school"></i>
+                            <h4>Budget</h4>
+                            <p>Schools, fundraisers</p>
+                            <small>-15% pricing</small>
+                        </div>
+                        <div class="event-type-card" data-type="bulk">
+                            <i class="fas fa-boxes"></i>
+                            <h4>Bulk</h4>
+                            <p>50+ units</p>
+                            <small>-25% pricing</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item Builder -->
+                <div class="section">
+                    <h3><i class="fas fa-plus"></i> Add Items</h3>
+                    
+                    <div class="item-builder">
+                        <div class="item-type-tabs">
+                            <button class="item-type-tab active" data-tab="figurines">
+                                <i class="fas fa-user"></i> Figurines
+                            </button>
+                            <button class="item-type-tab" data-tab="addons">
+                                <i class="fas fa-plus-circle"></i> Add-ons
+                            </button>
+                            <button class="item-type-tab" data-tab="products">
+                                <i class="fas fa-cube"></i> Products
+                            </button>
+                        </div>
+
+                        <!-- Figurines Tab -->
+                        <div class="tab-content active" data-content="figurines">
+                            <div class="form-group">
+                                <label>Figurine Type</label>
+                                <select id="figurine-type" class="form-control">
+                                    <option value="primary">Single Person</option>
+                                    <option value="twoPeople">Two People</option>
+                                    <option value="personPlusChild">One Person + Child</option>
+                                    <option value="twoPeoplePlusChild">Two People + Child</option>
+                                    <option value="soloPet">Solo Pet</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Size</label>
+                                <div class="size-selector" id="figurine-sizes">
+                                    <div class="size-option" data-size="3">3"</div>
+                                    <div class="size-option selected" data-size="4">4"</div>
+                                    <div class="size-option" data-size="5">5"</div>
+                                    <div class="size-option" data-size="6">6"</div>
+                                    <div class="size-option" data-size="7">7"</div>
+                                    <div class="size-option" data-size="8">8"</div>
+                                    <div class="size-option" data-size="9">9"</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Quantity</label>
+                                    <input type="number" id="figurine-quantity" min="1" value="1" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Price Preview</label>
+                                    <div id="figurine-price" class="form-control" style="background: #f8f9fa; font-weight: bold;">$155</div>
+                                </div>
+                                <button class="btn btn-primary" onclick="addFigurine()">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Add-ons Tab -->
+                        <div class="tab-content" data-content="addons">
+                            <div class="form-group">
+                                <label>Add-on Type</label>
+                                <select id="addon-type" class="form-control">
+                                    <option value="bases">Custom Base</option>
+                                    <option value="largeProp">Large Prop/Costume</option>
+                                    <option value="ornament">Ornament</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" id="addon-size-group">
+                                <label>Size</label>
+                                <div class="size-selector" id="addon-sizes">
+                                    <div class="size-option" data-size="3">3"</div>
+                                    <div class="size-option selected" data-size="4">4"</div>
+                                    <div class="size-option" data-size="5">5"</div>
+                                    <div class="size-option" data-size="6">6"</div>
+                                    <div class="size-option" data-size="7">7"</div>
+                                    <div class="size-option" data-size="8">8"</div>
+                                    <div class="size-option" data-size="9">9"</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Quantity</label>
+                                    <input type="number" id="addon-quantity" min="1" value="1" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Price Preview</label>
+                                    <div id="addon-price" class="form-control" style="background: #f8f9fa; font-weight: bold;">$0</div>
+                                </div>
+                                <button class="btn btn-primary" onclick="addAddon()">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Products Tab -->
+                        <div class="tab-content" data-content="products">
+                            <div class="form-group">
+                                <label>Product Type</label>
+                                <select id="product-type" class="form-control">
+                                    <option value="busts">Portrait Bust</option>
+                                    <option value="cards3D">3D Card</option>
+                                    <option value="vCards">V-Card (Business Card)</option>
+                                    <option value="vehicles">Vehicle Model</option>
+                                    <option value="buildings">Building Model</option>
+                                    <option value="personAnimal2Dto3D">2D to 3D Conversion</option>
+                                    <option value="digitalFiles">3D Digital Files</option>
+                                    <option value="eventServices">Event Services</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Quantity</label>
+                                    <input type="number" id="product-quantity" min="1" value="1" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Price Preview</label>
+                                    <div id="product-price" class="form-control" style="background: #f8f9fa; font-weight: bold;">$60</div>
+                                </div>
+                                <button class="btn btn-primary" onclick="addProduct()">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Information -->
+                <div class="section">
+                    <h3><i class="fas fa-user"></i> Customer Information (Optional)</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Customer Name</label>
+                            <input type="text" id="customer-name" class="form-control" placeholder="Enter customer name">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="customer-email" class="form-control" placeholder="Enter email address">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" id="customer-phone" class="form-control" placeholder="Enter phone number">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="section">
+                    <div class="action-buttons">
+                        <button class="btn btn-success" onclick="generateQuote()">
+                            <i class="fas fa-file-alt"></i> Generate Quote
+                        </button>
+                        <button class="btn btn-info" onclick="saveOrder()">
+                            <i class="fas fa-save"></i> Save Order
+                        </button>
+                        <button class="btn btn-secondary" onclick="clearAll()">
+                            <i class="fas fa-trash"></i> Clear All
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quote Summary -->
+            <div class="quote-summary">
+                <h3><i class="fas fa-receipt"></i> Order Summary</h3>
+                <div id="quote-items"></div>
+                
+                <div class="quote-total">
+                    <div style="display: flex; justify-content: between;">
+                        <span>Subtotal:</span>
+                        <span id="quote-subtotal">$0.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: between;">
+                        <span>Shipping:</span>
+                        <span id="quote-shipping">$14.95</span>
+                    </div>
+                    <div style="display: flex; justify-content: between; border-top: 1px solid #ccc; padding-top: 0.5rem; margin-top: 0.5rem;">
+                        <span>Total:</span>
+                        <span id="quote-total">$14.95</span>
+                    </div>
+                </div>
+
+                <div class="profit-analysis">
+                    <h4><i class="fas fa-chart-line"></i> Profit Analysis</h4>
+                    <div class="profit-row">
+                        <span>Revenue:</span>
+                        <span id="profit-revenue">$0.00</span>
+                    </div>
+                    <div class="profit-row">
+                        <span>Cost:</span>
+                        <span id="profit-cost">$0.00</span>
+                    </div>
+                    <div class="profit-row">
+                        <span>Royalties:</span>
+                        <span id="profit-royalties">$0.00</span>
+                    </div>
+                    <div class="profit-row">
+                        <span>Net Profit:</span>
+                        <span id="profit-net">$0.00</span>
+                    </div>
+                    <div class="profit-row">
+                        <span>Margin:</span>
+                        <span id="profit-margin">0%</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 1rem;">
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="include-shipping" checked> Include Shipping ($14.95)
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/pricing-calculator.js"></script>
+</body>
+</html>
