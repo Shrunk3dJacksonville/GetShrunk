@@ -33,7 +33,7 @@ class Dashboard {
     this.app.use(cors());
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
-    this.app.use(express.static(path.join(__dirname, '../public')));
+    // Static files will be set up AFTER API routes to prevent conflicts
   }
 
   setupFileUpload() {
@@ -137,6 +137,9 @@ class Dashboard {
     this.app.get('/api/ghl/contacts-list', this.getContactsList.bind(this));
     this.app.post('/api/ghl/send-email', this.sendEmailViaGHL.bind(this));
     this.app.post('/api/generate-template', this.generateCustomTemplate.bind(this));
+    
+    // Static files served AFTER API routes to prevent conflicts
+    this.app.use(express.static(path.join(__dirname, '../public')));
   }
 
   async getSystemStatus(req, res) {
