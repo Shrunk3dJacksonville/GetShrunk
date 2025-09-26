@@ -3,17 +3,25 @@ const fs = require('fs-extra');
 const path = require('path');
 
 class GoHighLevelClient {
-  constructor(config = null) {
-    this.config = config || this.loadConfig();
-    this.baseURL = this.config.api.baseUrl;
-    this.apiKey = this.config.api.credentials.apiKey;
-    this.locationId = this.config.api.credentials.locationId;
+  constructor(apiKey = null, locationId = null) {
+    // Support direct API key/location ID or config file
+    if (apiKey && locationId) {
+      this.apiKey = apiKey;
+      this.locationId = locationId;
+      this.baseURL = 'https://rest.gohighlevel.com/v1';
+      this.version = '2021-07-28';
+    } else {
+      this.config = this.loadConfig();
+      this.baseURL = this.config.api.baseUrl;
+      this.apiKey = this.config.api.credentials.apiKey;
+      this.locationId = this.config.api.credentials.locationId;
+    }
     
     this.client = axios.create({
       baseURL: this.baseURL,
       headers: {
         'Authorization': `Bearer ${this.apiKey}`,
-        'Version': this.config.api.version,
+        'Version': this.version || this.config?.api?.version || '2021-07-28',
         'Content-Type': 'application/json'
       }
     });
@@ -33,7 +41,6 @@ class GoHighLevelClient {
     try {
       const response = await this.client.get(`/contacts/`, {
         params: {
-          locationId: this.locationId,
           ...params
         }
       });

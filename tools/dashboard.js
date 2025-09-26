@@ -10,6 +10,7 @@ const ClientManager = require('./client-manager');
 const ProjectManager = require('./project-manager');
 const PricingEngine = require('./pricing-engine');
 const GoHighLevelClient = require('../ghl-integration/api/ghl-client');
+const AIAssistant = require('./ai-assistant');
 
 class Dashboard {
   constructor() {
@@ -21,6 +22,7 @@ class Dashboard {
     this.clientManager = new ClientManager();
     this.projectManager = new ProjectManager();
     this.pricingEngine = new PricingEngine();
+    this.aiAssistant = new AIAssistant();
     
     this.setupMiddleware();
     this.setupFileUpload();
@@ -81,6 +83,11 @@ class Dashboard {
     this.app.get('/ghl-setup', (req, res) => {
       res.sendFile(path.join(__dirname, '../public/ghl-setup.html'));
     });
+    
+    // AI Assistant Page
+    this.app.get('/ai-assistant', (req, res) => {
+      res.sendFile(path.join(__dirname, '../public/ai-assistant.html'));
+    });
 
     // API Routes
     this.app.get('/api/status', this.getSystemStatus.bind(this));
@@ -116,6 +123,10 @@ class Dashboard {
     this.app.post('/api/pricing/calculate', this.calculatePricing.bind(this));
     this.app.post('/api/pricing/quote', this.generateQuote.bind(this));
     this.app.get('/api/pricing/config', this.getPricingConfig.bind(this));
+    
+    // AI Assistant API
+    this.app.post('/api/ai/chat', this.handleAIChat.bind(this));
+    this.app.get('/api/ghl/contacts-summary', this.getContactsSummary.bind(this));
   }
 
   async getSystemStatus(req, res) {
@@ -366,8 +377,8 @@ class Dashboard {
       }
 
       // Test the connection first
-      const testClient = new GoHighLevelClient();
-      const testResult = await testClient.testConnection(apiKey, locationId);
+      const testClient = new GoHighLevelClient(apiKey, locationId);
+      const testResult = await testClient.testConnection();
       
       if (!testResult.connected) {
         return res.status(400).json({
@@ -554,6 +565,126 @@ class Dashboard {
       res.json(config);
     } catch (error) {
       res.status(500).json({ error: error.message });
+    }
+  }
+
+  async handleAIChat(req, res) {
+    try {
+      const { message, conversationHistory = [], businessContext = {} } = req.body;
+
+      if (!message) {
+        return res.status(400).json({ 
+          error: 'Message is required',
+          success: false 
+        });
+      }
+
+      // Process message with AI assistant
+      const result = await this.aiAssistant.processMessage(
+        message, 
+        conversationHistory, 
+        businessContext
+      );
+
+      res.json({
+        success: true,
+        response: result.response,
+        actions: result.actions || [],
+        intent: result.intent,
+        confidence: result.confidence,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      console.error('AI Chat Error:', error);
+      res.status(500).json({ 
+        success: false,
+        error: error.message,
+        response: "I apologize, but I encountered an error processing your request. Please try again."
+      });
+    }
+  }
+
+  async getContactsSummary(req, res) {
+    try {
+      // Load GHL configuration to check if connected
+      let ghlClient;
+      try {
+        const configPath = path.join(this.baseDir, 'config', 'ghl-config.json');
+        if (await fs.pathExists(configPath)) {
+          const config = await fs.readJson(configPath);
+          ghlClient = new GoHighLevelClient(config.apiKey, config.locationId);
+        } else {
+          throw new Error('GoHighLevel not configured');
+        }
+      } catch (configError) {
+        return res.json({
+          success: false,
+          error: 'GoHighLevel not connected',
+          data: {
+            total: 0,
+            hotLeads: 0,
+            thisMonth: 0,
+            eventContacts: 0
+          }
+        });
+      }
+
+      // Fetch contacts from GHL
+      const contacts = await ghlClient.getContacts({ limit: 100 });
+      
+      if (!contacts || !contacts.contacts) {
+        throw new Error('Failed to fetch contacts');
+      }
+
+      // Calculate summary statistics
+      const now = Date.now();
+      const monthAgo = now - (30 * 24 * 60 * 60 * 1000);
+      const weekAgo = now - (7 * 24 * 60 * 60 * 1000);
+
+      const summary = {
+        total: contacts.meta?.total || contacts.contacts.length,
+        hotLeads: 0,
+        thisMonth: 0,
+        eventContacts: 0
+      };
+
+      contacts.contacts.forEach(contact => {
+        // Hot leads (recent activity)
+        if (contact.lastActivity && contact.lastActivity > weekAgo) {
+          summary.hotLeads++;
+        }
+
+        // This month contacts
+        if (new Date(contact.dateAdded).getTime() > monthAgo) {
+          summary.thisMonth++;
+        }
+
+        // Event contacts
+        if (contact.tags && contact.tags.some(tag => 
+          tag.includes('con') || tag.includes('event') || tag.includes('city')
+        )) {
+          summary.eventContacts++;
+        }
+      });
+
+      res.json({
+        success: true,
+        data: summary
+      });
+
+    } catch (error) {
+      console.error('Contacts Summary Error:', error);
+      res.json({
+        success: false,
+        error: error.message,
+        data: {
+          total: 0,
+          hotLeads: 0,
+          thisMonth: 0,
+          eventContacts: 0
+        }
+      });
     }
   }
 

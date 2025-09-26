@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shrunk 3D AI Business Assistant</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --accent-color: #f59e0b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --text-color: #1f2937;
+            --text-light: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-color: #f9fafb;
+            --card-bg: #ffffff;
+            --input-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-color) 0%, #e0e7ff 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: var(--card-bg);
+            border-bottom: 2px solid var(--border-color);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+        }
+
+        .status-indicators {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-connected {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-disconnected {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .sidebar {
+            width: 320px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+            height: fit-content;
+        }
+
+        .chat-container {
+            flex: 1;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 120px);
+        }
+
+        .chat-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .chat-header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .chat-header p {
+            opacity: 0.9;
+            font-size: 0.875rem;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message {
+            display: flex;
+            gap: 0.75rem;
+            max-width: 85%;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message.assistant {
+            align-self: flex-start;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .user .message-avatar {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .assistant .message-avatar {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .message-content {
+            background: var(--bg-color);
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .user .message-content {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .assistant .message-content {
+            background: var(--card-bg);
+            border-color: var(--border-color);
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+
+        .user .message-time {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .chat-input-container {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-color);
+            border-radius: 0 0 12px 12px;
+        }
+
+        .chat-input-form {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 0.875rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: var(--input-bg);
+            resize: none;
+            min-height: 44px;
+            max-height: 120px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .chat-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .send-button {
+            padding: 0.875rem 1.25rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .send-button:hover {
+            background: var(--primary-hover);
+        }
+
+        .send-button:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+        }
+
+        .sidebar h3 {
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+
+        .quick-actions {
+            display: grid;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .quick-action {
+            padding: 0.75rem;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+
+        .quick-action:hover {
+            border-color: var(--primary-color);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .business-stats {
+            background: var(--bg-color);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-light);
+            animation: typingPulse 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingPulse {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-light);
+        }
+
+        .welcome-message h2 {
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .suggested-prompts {
+            display: grid;
+            gap: 0.75rem;
+            margin-top: 2rem;
+        }
+
+        .suggested-prompt {
+            padding: 1rem;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .suggested-prompt:hover {
+            border-color: var(--primary-color);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                order: 2;
+            }
+            
+            .chat-container {
+                order: 1;
+                height: 60vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-cube"></i>
+                <span>Shrunk 3D AI Assistant</span>
+            </div>
+            <div class="status-indicators">
+                <div id="ghl-status" class="status-badge status-disconnected">
+                    <i class="fas fa-circle"></i>
+                    <span>Checking GoHighLevel...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+            <div class="quick-actions">
+                <button class="quick-action" onclick="sendQuickMessage('Show me my latest contacts')">
+                    <i class="fas fa-users"></i> Latest Contacts
+                </button>
+                <button class="quick-action" onclick="sendQuickMessage('Create a follow-up message for Ancient City Con leads')">
+                    <i class="fas fa-envelope"></i> Create Follow-ups  
+                </button>
+                <button class="quick-action" onclick="sendQuickMessage('Generate pricing for wedding figurines')">
+                    <i class="fas fa-calculator"></i> Quick Quote
+                </button>
+                <button class="quick-action" onclick="sendQuickMessage('Show upcoming Jacksonville events')">
+                    <i class="fas fa-calendar"></i> Event Opportunities
+                </button>
+                <button class="quick-action" onclick="sendQuickMessage('Analyze my contact tags and suggest improvements')">
+                    <i class="fas fa-chart-bar"></i> Contact Analysis
+                </button>
+            </div>
+
+            <h3><i class="fas fa-chart-line"></i> Business Overview</h3>
+            <div class="business-stats" id="business-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Total Contacts</span>
+                    <span class="stat-value" id="total-contacts">--</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Hot Leads</span>
+                    <span class="stat-value" id="hot-leads">--</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">This Month</span>
+                    <span class="stat-value" id="month-contacts">--</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Event Contacts</span>
+                    <span class="stat-value" id="event-contacts">--</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-container">
+            <div class="chat-header">
+                <h1><i class="fas fa-robot"></i> Your AI Business Assistant</h1>
+                <p>Ask me anything about your GoHighLevel contacts, pricing, events, or business operations.</p>
+            </div>
+
+            <div class="chat-messages" id="chat-messages">
+                <div class="welcome-message" id="welcome-message">
+                    <h2>Welcome to Your AI Business Assistant!</h2>
+                    <p>I can help you manage your GoHighLevel contacts, create personalized responses, analyze your business data, and much more.</p>
+                    
+                    <div class="suggested-prompts">
+                        <div class="suggested-prompt" onclick="sendQuickMessage('Analyze my Ancient City Con contacts and suggest follow-up strategies')">
+                            📊 Analyze my Ancient City Con contacts and suggest follow-up strategies
+                        </div>
+                        <div class="suggested-prompt" onclick="sendQuickMessage('Create email templates for different types of 3D printing inquiries')">
+                            ✉️ Create email templates for different types of 3D printing inquiries
+                        </div>
+                        <div class="suggested-prompt" onclick="sendQuickMessage('Show me contacts who might be interested in upcoming Jacksonville events')">
+                            🎯 Show me contacts who might be interested in upcoming Jacksonville events
+                        </div>
+                        <div class="suggested-prompt" onclick="sendQuickMessage('Generate a professional quote email for wedding figurines')">
+                            💰 Generate a professional quote email for wedding figurines
+                        </div>
+                    </div>
+                </div>
+
+                <div class="typing-indicator" id="typing-indicator">
+                    <span>AI is thinking</span>
+                    <div class="typing-dots">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <form class="chat-input-form" id="chat-form">
+                    <textarea 
+                        class="chat-input" 
+                        id="chat-input" 
+                        placeholder="Ask me anything about your business... (e.g., 'Show me contacts from last week' or 'Create a follow-up for wedding leads')"
+                        rows="1"
+                    ></textarea>
+                    <button type="submit" class="send-button" id="send-button">
+                        <i class="fas fa-paper-plane"></i>
+                        Send
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let conversationHistory = [];
+        let ghlConnected = false;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            checkGHLStatus();
+            loadBusinessStats();
+            setupChatInput();
+        });
+
+        async function checkGHLStatus() {
+            try {
+                const response = await fetch('/api/ghl/status');
+                const status = await response.json();
+                
+                const statusElement = document.getElementById('ghl-status');
+                
+                if (status.connected) {
+                    statusElement.className = 'status-badge status-connected';
+                    statusElement.innerHTML = '<i class="fas fa-check-circle"></i> <span>GoHighLevel Connected</span>';
+                    ghlConnected = true;
+                } else {
+                    statusElement.className = 'status-badge status-disconnected';
+                    statusElement.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>GHL Disconnected</span>';
+                }
+            } catch (error) {
+                console.error('Failed to check GHL status:', error);
+            }
+        }
+
+        async function loadBusinessStats() {
+            try {
+                // Load basic stats
+                const statsResponse = await fetch('/api/stats');
+                const stats = await statsResponse.json();
+                
+                document.getElementById('total-contacts').textContent = stats.clients?.total || '0';
+                
+                // Try to load GHL contacts for more detailed stats
+                if (ghlConnected) {
+                    const contactsResponse = await fetch('/api/ghl/contacts-summary');
+                    const contactsData = await contactsResponse.json();
+                    
+                    if (contactsData.success) {
+                        updateContactStats(contactsData.data);
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load business stats:', error);
+            }
+        }
+
+        function updateContactStats(data) {
+            document.getElementById('total-contacts').textContent = data.total || '0';
+            document.getElementById('hot-leads').textContent = data.hotLeads || '0';
+            document.getElementById('month-contacts').textContent = data.thisMonth || '0';
+            document.getElementById('event-contacts').textContent = data.eventContacts || '0';
+        }
+
+        function setupChatInput() {
+            const chatInput = document.getElementById('chat-input');
+            const chatForm = document.getElementById('chat-form');
+
+            // Auto-resize textarea
+            chatInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+            });
+
+            // Handle form submission
+            chatForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const message = chatInput.value.trim();
+                if (message) {
+                    sendMessage(message);
+                    chatInput.value = '';
+                    chatInput.style.height = 'auto';
+                }
+            });
+
+            // Handle Enter key (Shift+Enter for new line)
+            chatInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    chatForm.dispatchEvent(new Event('submit'));
+                }
+            });
+        }
+
+        async function sendMessage(message) {
+            // Hide welcome message
+            const welcomeMessage = document.getElementById('welcome-message');
+            if (welcomeMessage) {
+                welcomeMessage.style.display = 'none';
+            }
+
+            // Add user message to chat
+            addMessageToChat('user', message);
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            // Disable input
+            const sendButton = document.getElementById('send-button');
+            const chatInput = document.getElementById('chat-input');
+            sendButton.disabled = true;
+            chatInput.disabled = true;
+
+            try {
+                // Send to AI assistant API
+                const response = await fetch('/api/ai/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        conversationHistory: conversationHistory.slice(-10), // Last 10 messages for context
+                        businessContext: {
+                            ghlConnected: ghlConnected,
+                            businessType: 'shrunk3d',
+                            location: 'Jacksonville, FL'
+                        }
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    addMessageToChat('assistant', result.response);
+                    
+                    // Update conversation history
+                    conversationHistory.push(
+                        { role: 'user', content: message },
+                        { role: 'assistant', content: result.response }
+                    );
+
+                    // If the response included actions, handle them
+                    if (result.actions) {
+                        handleAIActions(result.actions);
+                    }
+                } else {
+                    throw new Error(result.error || 'Failed to get AI response');
+                }
+
+            } catch (error) {
+                addMessageToChat('assistant', `I apologize, but I encountered an error: ${error.message}. Please try again or contact support if the issue persists.`);
+            } finally {
+                // Hide typing indicator and re-enable input
+                hideTypingIndicator();
+                sendButton.disabled = false;
+                chatInput.disabled = false;
+                chatInput.focus();
+            }
+        }
+
+        function sendQuickMessage(message) {
+            sendMessage(message);
+        }
+
+        function addMessageToChat(sender, content) {
+            const messagesContainer = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = sender === 'user' ? 'You' : 'AI';
+
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            
+            // Format the content (support for basic markdown)
+            const formattedContent = formatMessage(content);
+            messageContent.innerHTML = formattedContent;
+
+            const timestamp = document.createElement('div');
+            timestamp.className = 'message-time';
+            timestamp.textContent = new Date().toLocaleTimeString();
+
+            messageContent.appendChild(timestamp);
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(messageContent);
+
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function formatMessage(content) {
+            // Basic markdown formatting
+            return content
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                .replace(/\n/g, '<br>');
+        }
+
+        function showTypingIndicator() {
+            document.getElementById('typing-indicator').style.display = 'flex';
+            const messagesContainer = document.getElementById('chat-messages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            document.getElementById('typing-indicator').style.display = 'none';
+        }
+
+        function handleAIActions(actions) {
+            // Handle specific actions returned by the AI
+            actions.forEach(action => {
+                switch(action.type) {
+                    case 'refresh_stats':
+                        loadBusinessStats();
+                        break;
+                    case 'open_contact':
+                        if (action.contactId) {
+                            window.open(`/contacts/${action.contactId}`, '_blank');
+                        }
+                        break;
+                    case 'create_project':
+                        if (action.projectData) {
+                            // Handle project creation
+                        }
+                        break;
+                }
+            });
+        }
+
+        // Utility functions for error handling
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+            
+            const chatMessages = document.getElementById('chat-messages');
+            chatMessages.appendChild(errorDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Remove error after 5 seconds
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
